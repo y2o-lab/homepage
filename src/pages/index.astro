@@ -6,6 +6,7 @@ import {
   type ContentSection,
   formatDate,
   isPublished,
+  sectionDescriptions,
   sectionLabels,
 } from '@/lib/content';
 import { site } from '@/site.config';
@@ -25,68 +26,46 @@ const sectionEntries = await Promise.all(
 const latestEntries = sectionEntries
   .flatMap(({ entries, section }) => entries.slice(0, 2).map((entry) => ({ entry, section })))
   .sort((a, b) => byNewest(a.entry, b.entry))
-  .slice(0, 4);
+  .slice(0, 3);
 ---
 
 <BaseLayout>
-  <div class="home-dashboard" data-testid="home-dashboard">
-    <section class="profile-card" aria-labelledby="dashboard-title">
+  <section class="desk-board" data-testid="home-dashboard" aria-labelledby="home-title">
+    <aside class="sidebar" aria-label="プロフィール概要">
       <div class="avatar-frame">
-        <img src="/dashboard-avatar.webp" alt="" width="512" height="512" loading="eager" />
+        <img src="/dashboard-avatar.webp" alt={`${site.author} のプロフィールアイコン`} width="512" height="512" />
       </div>
-      <div class="profile-summary">
-        <p class="eyebrow">Dashboard</p>
-        <h1 id="dashboard-title">{site.author}</h1>
-        <p class="lead">
-          プロフィール文のサンプルです。作っているもの、学んでいること、日々のメモをここにまとめます。
-        </p>
-        <div class="account-links" aria-label="アカウント">
-          <a href="#" aria-label="X アカウントのサンプル">X</a>
-          <a href="#" aria-label="GitHub アカウントのサンプル">GitHub</a>
-          <a href="#" aria-label="Zenn アカウントのサンプル">Zenn</a>
+      <p class="kicker">Personal site</p>
+      <h1 class="hero-title" id="home-title">Build notes for the web.</h1>
+      <p class="hero-copy">
+        作ったもの、使っている技術、最近の関心を一覧しやすくまとめるポートフォリオ寄りのホームです。
+        制作ログや学びのメモへ、ここからすぐ移動できます。
+      </p>
+      <div class="sidebar-actions" aria-label="主要リンク">
+        <a class="button" href="/projects/">View Works</a>
+        <a class="button secondary" href="/blog/">Read Blog</a>
+      </div>
+    </aside>
+
+    <div class="panel-area">
+      <div class="toolbar">
+        <div class="chip-row" aria-label="現在の活動">
+          <span class="chip">Available</span>
+          <span class="chip">Astro</span>
+          <span class="chip">TypeScript</span>
         </div>
+        <a class="button" href="/projects/">作ったものを見る</a>
       </div>
-      <div class="clock-card" aria-label="JSTの現在時刻">
-        <span>JST</span>
-        <time data-jst-time>--:--:--</time>
-        <small data-jst-date>loading...</small>
-      </div>
-      <nav class="quick-actions" aria-label="主要セクション">
-        <a href="/blog/">ブログ</a>
-        <a href="/projects/">作ったもの</a>
-      </nav>
-    </section>
 
-    <section class="section-panel section-panel-main" aria-labelledby="sections-title">
-      <div class="panel-heading">
-        <p class="eyebrow">Sections</p>
-        <h2 id="sections-title">見るもの</h2>
-      </div>
-      <div class="section-grid">
-        {
-          sectionEntries.map(({ section, entries, latestEntry }) => (
-            <a class="section-tile" href={`/${section}/`}>
-              <strong>{sectionLabels[section]}</strong>
-              <span>{entries.length}件</span>
-              <time datetime={latestEntry?.data.pubDate.toISOString()}>
-                {latestEntry ? formatDate(latestEntry.data.pubDate) : 'coming soon...'}
-              </time>
-            </a>
-          ))
-        }
-      </div>
-    </section>
-
-    <section class="section-panel latest-panel" aria-labelledby="latest-title">
-      <div class="panel-heading">
-        <p class="eyebrow">Latest</p>
-        <h2 id="latest-title">最近の更新</h2>
-      </div>
-      {
-        latestEntries.length > 0 ? (
-          <ol class="latest-list">
-            {latestEntries.map(({ entry, section }) => (
-              <li>
+      <section class="latest-panel" aria-labelledby="latest-title">
+        <div class="panel-heading">
+          <p class="kicker">Latest</p>
+          <h2 id="latest-title">最近の更新</h2>
+        </div>
+        <div class="latest-list" aria-label="最近の更新">
+          {
+            latestEntries.length > 0 ? (
+              latestEntries.map(({ entry, section }) => (
                 <a href={`/${section}/${entry.id}/`}>
                   <span>{sectionLabels[section]}</span>
                   <strong>{entry.data.title}</strong>
@@ -94,537 +73,462 @@ const latestEntries = sectionEntries
                     {formatDate(entry.data.pubDate)}
                   </time>
                 </a>
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <p class="empty-dashboard">coming soon...</p>
-        )
-      }
-    </section>
-  </div>
+              ))
+            ) : (
+              <p class="empty-dashboard">coming soon...</p>
+            )
+          }
+        </div>
+      </section>
+
+      <section class="index-panel" aria-labelledby="sections-title">
+        <div class="panel-heading">
+          <p class="kicker">Index</p>
+          <h2 id="sections-title">見るもの</h2>
+        </div>
+        <div class="project-grid">
+          {
+            sectionEntries.map(({ section, entries, latestEntry }) => (
+              <a class="project-card" href={`/${section}/`}>
+                <div>
+                  <h3>{sectionLabels[section]}</h3>
+                  <p>{sectionDescriptions[section]}</p>
+                </div>
+                <div class="project-meta">
+                  <span>{entries.length}件</span>
+                  {latestEntry && <span>最新 {formatDate(latestEntry.data.pubDate)}</span>}
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+    </div>
+  </section>
 </BaseLayout>
 
-<script>
-  const timeNode = document.querySelector('[data-jst-time]');
-  const dateNode = document.querySelector('[data-jst-date]');
-  const timeFormatter = new Intl.DateTimeFormat('ja-JP', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    timeZone: 'Asia/Tokyo',
-  });
-  const dateFormatter = new Intl.DateTimeFormat('ja-JP', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'Asia/Tokyo',
-  });
-
-  function updateClock() {
-    const now = new Date();
-
-    if (timeNode instanceof HTMLTimeElement) {
-      timeNode.textContent = timeFormatter.format(now);
-      timeNode.dateTime = now.toISOString();
-    }
-
-    if (dateNode instanceof HTMLElement) {
-      dateNode.textContent = dateFormatter.format(now);
-    }
-  }
-
-  updateClock();
-  window.setInterval(updateClock, 1000);
-</script>
-
 <style>
-  :global(main) {
-    padding-top: clamp(0.75rem, 1.4vw, 1.1rem);
-    padding-bottom: clamp(0.75rem, 1.4vw, 1.1rem);
+  :global(body) {
+    background:
+      linear-gradient(90deg, rgb(255 247 226 / 0.92), rgb(238 221 184 / 0.84)),
+      #efddb8;
+    color: #2e261d;
   }
 
   :global(.site-header) {
-    padding-top: clamp(0.75rem, 1.4vw, 1rem);
-    padding-bottom: clamp(0.75rem, 1.4vw, 1rem);
+    width: min(1180px, calc(100% - 40px));
+    max-width: none;
+    padding: 20px 0 18px;
   }
 
-  :global(footer) {
-    padding-top: 0.55rem;
-    padding-bottom: 0.65rem;
-    font-size: 0.86rem;
+  :global(.site-header .brand) {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    color: #2e261d;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-decoration: none;
   }
 
-  :global(footer p) {
-    margin: 0;
-  }
-
-  .home-dashboard {
-    display: grid;
-    grid-template-columns: minmax(16rem, 0.62fr) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto;
-    gap: 0.75rem;
-    min-height: min(34rem, calc(100svh - 7.75rem));
-    animation: dashboard-enter 620ms ease-out both;
-  }
-
-  .profile-card,
-  .section-panel {
-    border: 1px solid rgb(86 61 33 / 0.16);
-    border-radius: 8px;
-    box-shadow: 0 16px 44px rgb(67 45 19 / 0.1);
-  }
-
-  .profile-card {
-    position: relative;
-    isolation: isolate;
-    display: grid;
-    grid-row: 1 / span 2;
-    grid-template-rows: auto 1fr auto auto;
-    gap: 0.72rem;
-    align-content: start;
-    overflow: hidden;
-    padding: clamp(0.85rem, 1.7vw, 1.2rem);
+  :global(.site-header .brand::before) {
+    display: block;
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border: 2px solid rgb(46 38 29 / 0.8);
+    border-radius: 50%;
     background:
-      linear-gradient(132deg, rgb(255 244 205 / 0.9), rgb(236 199 127 / 0.82)),
-      #efd08b;
-  }
-
-  .profile-card::before,
-  .profile-card::after {
-    position: absolute;
-    inset: -7%;
-    z-index: -1;
-    pointer-events: none;
+      image-set(url("/dashboard-avatar.webp") type("image/webp")) center / cover,
+      #f7e3b8;
     content: "";
   }
 
-  .profile-card::before {
-    background:
-      linear-gradient(166deg, transparent 0 9%, rgb(255 210 62 / 0.78) 9% 20%, transparent 20% 100%),
-      linear-gradient(166deg, transparent 0 23%, rgb(241 151 42 / 0.48) 23% 33%, transparent 33% 100%),
-      linear-gradient(166deg, transparent 0 39%, rgb(255 242 196 / 0.78) 39% 49%, transparent 49% 100%),
-      linear-gradient(166deg, transparent 0 57%, rgb(244 188 83 / 0.5) 57% 70%, transparent 70% 100%),
-      linear-gradient(166deg, transparent 0 78%, rgb(255 239 178 / 0.68) 78% 87%, transparent 87% 100%),
-      linear-gradient(134deg, rgb(255 246 214 / 0.6), rgb(235 191 109 / 0.28));
-    background-size:
-      auto,
-      auto,
-      auto,
-      auto,
-      auto,
-      auto;
-    background-position:
-      center,
-      center,
-      center,
-      center,
-      center,
-      center;
-    filter: saturate(1.02);
-    opacity: 0.98;
-    transform: rotate(-2deg) scale(1.04);
+  :global(.site-header nav) {
+    gap: 0.55rem 1.25rem;
+    color: rgb(46 38 29 / 0.76);
+    font-size: 0.9rem;
+    font-weight: 800;
   }
 
-  .profile-card::after {
-    background:
-      linear-gradient(166deg, transparent 0 11%, rgb(255 255 255 / 0.44) 11% 13%, transparent 13% 100%),
-      linear-gradient(166deg, transparent 0 36%, rgb(255 255 255 / 0.32) 36% 38%, transparent 38% 100%),
-      linear-gradient(166deg, transparent 0 72%, rgb(255 255 255 / 0.26) 72% 74%, transparent 74% 100%),
-      repeating-linear-gradient(166deg, transparent 0 18px, rgb(128 82 30 / 0.055) 18px 20px, transparent 20px 34px);
-    background-size:
-      auto,
-      auto,
-      auto,
-      auto;
-    filter: blur(0.15px);
-    mix-blend-mode: multiply;
-    opacity: 0.72;
-    transform: rotate(-2deg) scale(1.04);
+  :global(.site-header nav a) {
+    white-space: nowrap;
+  }
+
+  :global(main) {
+    width: min(1180px, calc(100% - 40px));
+    max-width: none;
+    padding: 0 0 42px;
+  }
+
+  :global(footer) {
+    width: min(1180px, calc(100% - 40px));
+    max-width: none;
+    border-top-color: rgb(77 51 36 / 0.18);
+    color: rgb(46 38 29 / 0.58);
+  }
+
+  .desk-board {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 28px;
+    min-height: calc(100svh - 74px);
+  }
+
+  .sidebar {
+    min-width: 0;
+    border-right: 1px solid rgb(76 51 36 / 0.2);
+    padding: 26px 28px 26px 0;
   }
 
   .avatar-frame {
-    display: grid;
-    width: min(100%, clamp(7rem, 17svh, 12rem));
-    aspect-ratio: 1;
-    justify-self: center;
-    place-items: center;
-    padding: 0.35rem;
-    overflow: hidden;
-    border: 1px solid rgb(106 79 42 / 0.18);
-    border-radius: 8px;
-    background: #f3dfad;
-    box-shadow: inset 0 1px 0 rgb(255 252 239 / 0.62);
+    position: relative;
+    isolation: isolate;
+    width: min(220px, 100%);
+    margin-bottom: 28px;
+  }
+
+  .avatar-frame::before {
+    position: absolute;
+    z-index: -1;
+    inset: 8% -6% -6% 10%;
+    border: 2px solid rgb(77 51 36 / 0.18);
+    border-radius: 28px;
+    content: "";
+    transform: rotate(3deg);
   }
 
   .avatar-frame img {
     width: 100%;
     aspect-ratio: 1;
+    border: 2px solid rgb(46 38 29 / 0.78);
+    border-radius: 22px;
+    box-shadow: 0 24px 70px rgb(77 51 36 / 0.18);
     object-fit: cover;
-    border-radius: 6px;
-    filter: sepia(0.08) saturate(0.92);
-    animation: avatar-float 4.8s ease-in-out infinite;
   }
 
-  .profile-summary {
-    align-self: center;
-  }
-
-  .eyebrow {
-    margin: 0 0 0.45rem;
-    color: #2f5f50;
+  .kicker {
+    margin: 0 0 14px;
+    color: #b66d43;
     font-size: 0.8rem;
-    font-weight: 900;
-  }
-
-  .profile-card h1 {
-    max-width: 10ch;
-    color: #332313;
-    font-size: clamp(2.6rem, 4.4vw, 4.55rem);
-  }
-
-  .lead {
-    max-width: 28rem;
-    margin-top: 0.55rem;
-    color: #4b3823;
-    font-size: clamp(0.92rem, 1.15vw, 1.03rem);
-    font-weight: 650;
-    line-height: 1.55;
-  }
-
-  .account-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.65rem;
-  }
-
-  .account-links a {
-    display: inline-flex;
-    min-height: 1.95rem;
-    align-items: center;
-    padding: 0.25rem 0.65rem;
-    border: 1px solid rgb(51 35 19 / 0.12);
-    border-radius: 999px;
-    background: rgb(255 249 225 / 0.58);
-    color: #3f2d1c;
-    font-size: 0.82rem;
-    font-weight: 850;
-    text-decoration: none;
-    transition:
-      background-color 180ms ease,
-      transform 180ms ease;
-  }
-
-  .account-links a:hover,
-  .quick-actions a:hover,
-  .section-tile:hover,
-  .latest-list a:hover {
-    transform: translateY(-2px);
-  }
-
-  .account-links a:hover {
-    background: rgb(255 252 239 / 0.86);
-  }
-
-  .clock-card {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.15rem 0.7rem;
-    align-items: baseline;
-    padding: 0.55rem 0.75rem;
-    border: 1px solid rgb(86 61 33 / 0.14);
-    border-radius: 8px;
-    background: rgb(255 252 239 / 0.48);
-    color: #332313;
-  }
-
-  .clock-card span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: #2f5f50;
-    font-size: 0.78rem;
     font-weight: 950;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .clock-card span::before {
-    display: block;
-    width: 0.45rem;
-    height: 0.45rem;
-    background: #2f5f50;
-    border-radius: 999px;
-    content: "";
-    animation: clock-pulse 1.8s ease-in-out infinite;
+  .hero-title {
+    max-width: 100%;
+    margin: 0 0 18px;
+    color: #2e261d;
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    font-size: clamp(2.5rem, 6.5vw, 4.75rem);
+    line-height: 0.98;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
   }
 
-  .clock-card time {
-    justify-self: end;
-    font-size: clamp(1.35rem, 2.2vw, 1.95rem);
-    font-weight: 900;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
+  .hero-copy {
+    margin: 0 0 22px;
+    color: rgb(46 38 29 / 0.72);
+    font-size: 0.98rem;
+    font-weight: 650;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
   }
 
-  .clock-card small {
-    grid-column: 1 / -1;
-    color: #6c5638;
-    font-size: 0.78rem;
-  }
-
-  .quick-actions {
+  .sidebar-actions,
+  .chip-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    gap: 10px;
   }
 
-  .quick-actions a {
+  .button,
+  .chip,
+  .project-meta span,
+  .latest-list span {
     display: inline-flex;
-    min-height: 2.2rem;
     align-items: center;
     justify-content: center;
-    padding: 0.4rem 0.8rem;
+    border: 1px solid rgb(77 51 36 / 0.18);
     border-radius: 999px;
-    background: rgb(255 249 225 / 0.82);
-    color: #332313;
-    font-weight: 850;
     text-decoration: none;
-    transition:
-      background-color 180ms ease,
-      transform 180ms ease;
+    white-space: nowrap;
   }
 
-  .quick-actions a:first-child {
-    background: #2f5f50;
-    color: #fff9e1;
-  }
-
-  .section-panel {
-    min-height: 0;
-    padding: 0.75rem;
-    background: rgb(255 252 239 / 0.92);
-    animation: panel-enter 520ms ease-out both;
-  }
-
-  .latest-panel {
-    animation-delay: 90ms;
-  }
-
-  .panel-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.58rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgb(86 61 33 / 0.14);
-  }
-
-  .panel-heading h2 {
-    margin: 0;
-    color: #332313;
-    font-size: clamp(1.2rem, 1.6vw, 1.48rem);
-  }
-
-  .section-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.55rem;
-  }
-
-  .section-tile {
-    display: grid;
-    gap: 0.25rem;
-    min-height: 5.8rem;
-    padding: 0.65rem;
-    border: 1px solid rgb(86 61 33 / 0.13);
-    border-radius: 8px;
-    background: #fff8df;
-    text-decoration: none;
+  .button {
+    min-height: 44px;
+    padding: 0 18px;
+    background: #2e261d;
+    color: #fff6dd;
+    font-size: 0.88rem;
+    font-weight: 900;
+    box-shadow: 0 10px 24px rgb(46 38 29 / 0.18);
     transition:
       border-color 180ms ease,
-      box-shadow 180ms ease,
-      transform 180ms ease;
-  }
-
-  .section-tile:hover {
-    border-color: rgb(47 95 80 / 0.35);
-    box-shadow: 0 12px 28px rgb(67 45 19 / 0.08);
-  }
-
-  .section-tile strong,
-  .latest-list strong {
-    color: #332313;
-    line-height: 1.35;
-  }
-
-  .section-tile span,
-  .section-tile time,
-  .latest-list time,
-  .empty-dashboard {
-    color: #6c5638;
-    font-size: 0.8rem;
-  }
-
-  .section-tile span {
-    width: fit-content;
-    margin-top: auto;
-    padding: 0.12rem 0.45rem;
-    border-radius: 999px;
-    background: #dfe9d7;
-    color: #2f5f50;
-    font-weight: 900;
-  }
-
-  .latest-panel {
-    align-self: stretch;
-  }
-
-  .latest-list {
-    display: grid;
-    gap: 0.25rem;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  .latest-list a {
-    display: grid;
-    grid-template-columns: 5.25rem minmax(0, 1fr) auto;
-    gap: 0.65rem;
-    align-items: center;
-    padding: 0.35rem 0;
-    border-bottom: 1px solid rgb(86 61 33 / 0.12);
-    text-decoration: none;
-    transition:
+      background-color 180ms ease,
       color 180ms ease,
       transform 180ms ease;
   }
 
-  .latest-list li:last-child a {
-    border-bottom: 0;
+  .button.secondary {
+    background: rgb(255 246 221 / 0.58);
+    color: #4d3324;
+    box-shadow: none;
+  }
+
+  .button:hover {
+    color: #fff6dd;
+    transform: translateY(-2px);
+  }
+
+  .button.secondary:hover {
+    border-color: rgb(77 51 36 / 0.34);
+    background: #fff8e8;
+    color: #4d3324;
+  }
+
+  .chip {
+    min-height: 34px;
+    padding: 0 12px;
+    background: rgb(255 250 235 / 0.58);
+    color: #4d3324;
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .panel-area {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    min-width: 0;
+    gap: 22px;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgb(76 51 36 / 0.2);
+    padding: 26px 0 18px;
+  }
+
+  .panel-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-bottom: 12px;
+  }
+
+  .panel-heading h2 {
+    margin: 0;
+    color: #2e261d;
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    line-height: 1.1;
+  }
+
+  .latest-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .latest-list a,
+  .project-card {
+    min-width: 0;
+    border: 1px solid rgb(77 51 36 / 0.18);
+    border-radius: 8px;
+    background: rgb(255 248 228 / 0.74);
+    box-shadow: 0 18px 44px rgb(77 51 36 / 0.08);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .latest-list a {
+    display: grid;
+    gap: 7px;
+    min-height: 120px;
+    align-content: start;
+    padding: 16px;
+  }
+
+  .latest-list a:nth-child(2),
+  .project-card:nth-child(2) {
+    background: rgb(234 223 196 / 0.82);
+  }
+
+  .latest-list a:nth-child(3),
+  .project-card:nth-child(3) {
+    background: rgb(226 232 205 / 0.72);
+  }
+
+  .latest-list a:hover,
+  .project-card:hover {
+    border-color: rgb(77 51 36 / 0.34);
+    background: #fff8e8;
+    color: inherit;
+    transform: translateY(-2px);
   }
 
   .latest-list span {
     width: fit-content;
-    padding: 0.12rem 0.45rem;
-    border-radius: 999px;
-    background: #dfe9d7;
-    color: #2f5f50;
-    font-size: 0.74rem;
+    max-width: 100%;
+    padding: 0.12rem 0.5rem;
+    background: rgb(226 232 205 / 0.76);
+    color: #4c654e;
+    font-size: 0.72rem;
+    font-weight: 950;
+  }
+
+  .latest-list strong {
+    color: #2e261d;
+    font-size: 1rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .latest-list time {
+    margin-top: auto;
+    color: rgb(46 38 29 / 0.64);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .project-card {
+    display: flex;
+    min-height: 220px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 22px;
+    padding: 20px;
+  }
+
+  .project-card h3 {
+    margin: 0 0 10px;
+    color: #2e261d;
+    font-size: clamp(1.15rem, 2vw, 1.38rem);
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+  }
+
+  .project-card p {
+    margin: 0;
+    color: rgb(46 38 29 / 0.68);
+    font-weight: 650;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  .project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .project-meta span {
+    padding: 5px 9px;
+    color: #4d3324;
+    font-size: 0.7rem;
     font-weight: 900;
   }
 
   .empty-dashboard {
     margin: 0;
+    color: rgb(46 38 29 / 0.64);
   }
 
-  @keyframes dashboard-enter {
-    from {
-      transform: translateY(10px);
+  @media (max-width: 1060px) {
+    .desk-board {
+      grid-template-columns: 260px minmax(0, 1fr);
     }
 
-    to {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes panel-enter {
-    from {
-      transform: translateY(8px);
-    }
-
-    to {
-      transform: translateY(0);
+    .project-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @keyframes avatar-float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-5px);
-    }
-  }
-
-  @keyframes clock-pulse {
-    0%,
-    100% {
-      opacity: 0.5;
-      transform: scale(0.9);
-    }
-
-    50% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @media (max-width: 900px) {
-    :global(main) {
-      padding-top: 2rem;
-      padding-bottom: 5rem;
-    }
-
-    .home-dashboard {
+  @media (max-width: 880px) {
+    .desk-board {
       grid-template-columns: 1fr;
-      grid-template-rows: auto;
       min-height: 0;
     }
 
-    .profile-card {
-      grid-row: auto;
-      grid-template-rows: auto;
+    .sidebar {
+      border-right: 0;
+      border-bottom: 1px solid rgb(76 51 36 / 0.2);
+      padding-right: 0;
     }
 
     .avatar-frame {
-      width: 7rem;
-      justify-self: start;
+      width: min(180px, 55vw);
+    }
+
+    .latest-list {
+      grid-template-columns: 1fr;
     }
   }
 
-  @media (max-width: 620px) {
-    .section-grid,
+  @media (max-width: 720px) {
+    :global(.site-header),
+    :global(main),
+    :global(footer) {
+      width: min(100% - 28px, 1180px);
+    }
+
+    :global(.site-header nav) {
+      justify-content: flex-start;
+      overflow-x: auto;
+      width: 100%;
+      padding-bottom: 4px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.75rem, 16vw, 4.25rem);
+    }
+
+    .toolbar {
+      align-items: stretch;
+    }
+
+    .toolbar .button,
+    .sidebar-actions .button {
+      width: 100%;
+    }
+
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .project-card,
     .latest-list a {
-      grid-template-columns: 1fr;
-    }
-
-    .profile-card h1 {
-      font-size: clamp(2.35rem, 16vw, 4rem);
-    }
-
-    .clock-card {
-      grid-template-columns: 1fr;
-    }
-
-    .clock-card time {
-      justify-self: start;
+      min-height: auto;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-dashboard,
-    .section-panel,
-    .avatar-frame img,
-    .clock-card span::before {
-      animation: none;
-    }
-
-    .account-links a,
-    .quick-actions a,
-    .section-tile,
-    .latest-list a {
+    .button,
+    .latest-list a,
+    .project-card {
       transition: none;
     }
 
-    .account-links a:hover,
-    .quick-actions a:hover,
-    .section-tile:hover,
-    .latest-list a:hover {
+    .button:hover,
+    .latest-list a:hover,
+    .project-card:hover {
       transform: none;
     }
   }

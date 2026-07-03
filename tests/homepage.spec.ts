@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('renders the dashboard homepage navigation and key panels', async ({ page }) => {
+test('renders the desk board homepage navigation and key panels', async ({ page }) => {
   await page.goto('/');
 
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
@@ -11,21 +11,25 @@ test('renders the dashboard homepage navigation and key panels', async ({ page }
   await expect(navigation.getByRole('link', { name: '勉強メモ' })).toBeVisible();
   await expect(navigation.getByRole('link', { name: '書籍メモ' })).toBeVisible();
   await expect(navigation.getByRole('link', { name: '写真UI案' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'inoue.' })).toBeVisible();
-  await expect(page.getByLabel('JSTの現在時刻')).toBeVisible();
-  await expect(page.getByLabel('アカウント', { exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
+  await expect(page.getByLabel('プロフィール概要')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Build notes for the web.' })).toBeVisible();
+  await expect(page.getByLabel('現在の活動')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View Works' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '作ったものを見る' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '最近の更新' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
   await expect(page.getByTestId('home-dashboard')).toBeVisible();
 });
 
-test('fits the full homepage into one desktop viewport', async ({ page }) => {
+test('keeps desk board readable without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto('/');
 
   const dashboard = page.getByTestId('home-dashboard');
   const box = await dashboard.boundingBox();
-  const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+  const hasHorizontalOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > window.innerWidth + 1,
+  );
   const viewportHeight = page.viewportSize()?.height;
 
   if (!box) {
@@ -33,10 +37,10 @@ test('fits the full homepage into one desktop viewport', async ({ page }) => {
   }
 
   expect(viewportHeight).toBeDefined();
-  expect(pageHeight).toBeLessThanOrEqual(viewportHeight ?? 0);
-  expect(box.y + box.height).toBeLessThanOrEqual(viewportHeight ?? 0);
+  expect(box.y).toBeLessThan(viewportHeight ?? 0);
+  expect(hasHorizontalOverflow).toBe(false);
   await expect(page.getByRole('heading', { name: '最近の更新' })).toBeInViewport();
-  await expect(page.getByRole('contentinfo')).toBeInViewport();
+  await expect(page.getByRole('heading', { name: '見るもの' })).toBeInViewport();
 });
 
 test('keeps primary layout readable on mobile', async ({ page }) => {
@@ -44,6 +48,6 @@ test('keeps primary layout readable on mobile', async ({ page }) => {
 
   await expect(page.getByRole('banner')).toBeVisible();
   await expect(page.getByRole('main')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'inoue.' })).toBeInViewport();
+  await expect(page.getByRole('heading', { name: 'Build notes for the web.' })).toBeInViewport();
   await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
 });
