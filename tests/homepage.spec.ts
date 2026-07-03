@@ -1,5 +1,19 @@
 import { expect, test } from '@playwright/test';
 
+const themedRoutes = [
+  '/',
+  '/blog/',
+  '/blog/hello/',
+  '/projects/',
+  '/projects/homepage/',
+  '/notes/',
+  '/notes/astro-content-collections/',
+  '/books/',
+  '/books/sample-book/',
+  '/photo-ui/',
+  '/photo-ui/scale/',
+] as const;
+
 test('renders the desk board homepage navigation and key panels', async ({ page }) => {
   await page.goto('/');
 
@@ -50,4 +64,36 @@ test('keeps primary layout readable on mobile', async ({ page }) => {
   await expect(page.getByRole('main')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Build notes for the web.' })).toBeInViewport();
   await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
+});
+
+test('applies the homepage theme shell across public pages', async ({ page }) => {
+  for (const route of themedRoutes) {
+    await page.goto(route);
+
+    const theme = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      const body = getComputedStyle(document.body);
+      const main = getComputedStyle(document.querySelector('main') ?? document.body);
+      const brand = document.querySelector('.brand');
+      const brandMark = brand ? getComputedStyle(brand, '::before') : null;
+
+      return {
+        bg: root.getPropertyValue('--bg').trim(),
+        text: root.getPropertyValue('--text').trim(),
+        bodyColor: body.color,
+        bodyBackground: body.backgroundImage,
+        brandMarkWidth: brandMark?.width,
+        mainWidth: Number.parseFloat(main.width),
+        hasHorizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+      };
+    });
+
+    expect(theme.bg, route).toBe('#f5dfb1');
+    expect(theme.text, route).toBe('#2e261d');
+    expect(theme.bodyColor, route).toBe('rgb(46, 38, 29)');
+    expect(theme.bodyBackground, route).toContain('linear-gradient');
+    expect(theme.brandMarkWidth, route).toBe('38px');
+    expect(theme.mainWidth, route).toBeLessThanOrEqual(1180);
+    expect(theme.hasHorizontalOverflow, route).toBe(false);
+  }
 });

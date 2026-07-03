@@ -108,67 +108,6 @@ const latestEntries = sectionEntries
 </BaseLayout>
 
 <style>
-  :global(body) {
-    background:
-      linear-gradient(90deg, rgb(255 247 226 / 0.92), rgb(238 221 184 / 0.84)),
-      #efddb8;
-    color: #2e261d;
-  }
-
-  :global(.site-header) {
-    width: min(1180px, calc(100% - 40px));
-    max-width: none;
-    padding: 20px 0 18px;
-  }
-
-  :global(.site-header .brand) {
-    display: inline-flex;
-    min-width: 0;
-    align-items: center;
-    gap: 10px;
-    color: #2e261d;
-    font-weight: 900;
-    letter-spacing: 0;
-    text-decoration: none;
-  }
-
-  :global(.site-header .brand::before) {
-    display: block;
-    flex: 0 0 auto;
-    width: 38px;
-    height: 38px;
-    border: 2px solid rgb(46 38 29 / 0.8);
-    border-radius: 50%;
-    background:
-      image-set(url("/dashboard-avatar.webp") type("image/webp")) center / cover,
-      #f7e3b8;
-    content: "";
-  }
-
-  :global(.site-header nav) {
-    gap: 0.55rem 1.25rem;
-    color: rgb(46 38 29 / 0.76);
-    font-size: 0.9rem;
-    font-weight: 800;
-  }
-
-  :global(.site-header nav a) {
-    white-space: nowrap;
-  }
-
-  :global(main) {
-    width: min(1180px, calc(100% - 40px));
-    max-width: none;
-    padding: 0 0 42px;
-  }
-
-  :global(footer) {
-    width: min(1180px, calc(100% - 40px));
-    max-width: none;
-    border-top-color: rgb(77 51 36 / 0.18);
-    color: rgb(46 38 29 / 0.58);
-  }
-
   .desk-board {
     display: grid;
     grid-template-columns: 300px minmax(0, 1fr);
@@ -483,19 +422,6 @@ const latestEntries = sectionEntries
   }
 
   @media (max-width: 720px) {
-    :global(.site-header),
-    :global(main),
-    :global(footer) {
-      width: min(100% - 28px, 1180px);
-    }
-
-    :global(.site-header nav) {
-      justify-content: flex-start;
-      overflow-x: auto;
-      width: 100%;
-      padding-bottom: 4px;
-    }
-
     .hero-title {
       font-size: clamp(2.75rem, 16vw, 4.25rem);
     }
