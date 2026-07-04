@@ -37,7 +37,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "@astrojs/markdown-remark": "7.2.0",
     "@biomejs/biome": "2.5.1",
+    "@mermaid-js/mermaid-cli": "11.16.0",
     "@playwright/test": "1.61.1",
     "@tailwindcss/typography": "0.5.20",
     "@tailwindcss/vite": "4.3.1",

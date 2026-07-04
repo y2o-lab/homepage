@@ -30,7 +30,7 @@ const latestEntries = sectionEntries
 ---
 
 <BaseLayout>
-  <section class="desk-board" data-testid="home-dashboard" aria-labelledby="home-title">
+  <section class="desk-board home-entrance" data-testid="home-dashboard" aria-labelledby="home-title">
     <aside class="sidebar" aria-label="プロフィール概要">
       <div class="avatar-frame">
         <img src="/dashboard-avatar.webp" alt={`${site.author} のプロフィールアイコン`} width="512" height="512" />
@@ -390,6 +390,95 @@ const latestEntries = sectionEntries
     color: rgb(46 38 29 / 0.64);
   }
 
+  :global(.site-header) {
+    animation: desk-drop 520ms ease-out backwards;
+  }
+
+  .home-entrance .sidebar {
+    animation: desk-slide 680ms 120ms cubic-bezier(0.2, 0.84, 0.22, 1) backwards;
+  }
+
+  .home-entrance .toolbar {
+    animation: desk-drop 620ms 180ms ease-out backwards;
+  }
+
+  .home-entrance .latest-panel .panel-heading {
+    animation: desk-drop 560ms 260ms ease-out backwards;
+  }
+
+  .home-entrance .index-panel .panel-heading {
+    animation: desk-drop 560ms 420ms ease-out backwards;
+  }
+
+  .home-entrance .latest-list a,
+  .home-entrance .project-card {
+    animation: card-place 700ms cubic-bezier(0.2, 0.84, 0.22, 1) backwards;
+  }
+
+  .home-entrance .latest-list a:nth-child(1) {
+    animation-delay: 340ms;
+  }
+
+  .home-entrance .latest-list a:nth-child(2) {
+    animation-delay: 420ms;
+  }
+
+  .home-entrance .latest-list a:nth-child(3) {
+    animation-delay: 500ms;
+  }
+
+  .home-entrance .project-card:nth-child(1) {
+    animation-delay: 580ms;
+  }
+
+  .home-entrance .project-card:nth-child(2) {
+    animation-delay: 660ms;
+  }
+
+  .home-entrance .project-card:nth-child(3) {
+    animation-delay: 740ms;
+  }
+
+  .home-entrance .project-card:nth-child(4) {
+    animation-delay: 820ms;
+  }
+
+  @keyframes desk-drop {
+    from {
+      opacity: 0;
+      transform: translateY(-18px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes desk-slide {
+    from {
+      opacity: 0;
+      transform: translateX(-28px) rotate(-1.5deg);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0) rotate(0deg);
+    }
+  }
+
+  @keyframes card-place {
+    from {
+      opacity: 0;
+      transform: translateY(28px) rotate(1.5deg);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0deg);
+    }
+  }
+
   @media (max-width: 1060px) {
     .desk-board {
       grid-template-columns: 260px minmax(0, 1fr);
@@ -446,6 +535,15 @@ const latestEntries = sectionEntries
   }
 
   @media (prefers-reduced-motion: reduce) {
+    :global(.site-header),
+    .home-entrance .sidebar,
+    .home-entrance .toolbar,
+    .home-entrance .panel-heading,
+    .home-entrance .latest-list a,
+    .home-entrance .project-card {
+      animation: none;
+    }
+
     .button,
     .latest-list a,
     .project-card {

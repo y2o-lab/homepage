@@ -4,6 +4,7 @@ const themedRoutes = [
   '/',
   '/blog/',
   '/blog/hello/',
+  '/blog/markdown-rendering-sample/',
   '/projects/',
   '/projects/homepage/',
   '/notes/',
@@ -33,6 +34,24 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
   await expect(page.getByRole('heading', { name: '最近の更新' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
   await expect(page.getByTestId('home-dashboard')).toBeVisible();
+
+  const entranceMotion = await page.evaluate(() => {
+    const header = document.querySelector('.site-header');
+    const sidebar = document.querySelector('.home-entrance .sidebar');
+    const card = document.querySelector('.home-entrance .project-card');
+
+    return {
+      header: header ? getComputedStyle(header).animationName : null,
+      sidebar: sidebar ? getComputedStyle(sidebar).animationName : null,
+      card: card ? getComputedStyle(card).animationName : null,
+    };
+  });
+
+  expect(entranceMotion).toEqual({
+    header: 'desk-drop',
+    sidebar: 'desk-slide',
+    card: 'card-place',
+  });
 });
 
 test('keeps desk board readable without horizontal overflow', async ({ page }) => {
@@ -96,4 +115,32 @@ test('applies the homepage theme shell across public pages', async ({ page }) =>
     expect(theme.mainWidth, route).toBeLessThanOrEqual(1180);
     expect(theme.hasHorizontalOverflow, route).toBe(false);
   }
+});
+
+test('renders rich markdown content and mermaid diagrams', async ({ page }) => {
+  await page.goto('/blog/markdown-rendering-sample/');
+
+  await expect(page.getByRole('heading', { name: 'Markdown 表示サンプル' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Mermaid 図' })).toBeVisible();
+  await expect(page.getByText('src/styles/global.css')).toBeVisible();
+  await expect(page.locator('.mermaid-diagram[data-mermaid-rendered="build"] svg')).toBeVisible();
+
+  const articleMetrics = await page.evaluate(() => {
+    const article = document.querySelector('.content-article');
+    const diagram = document.querySelector('.mermaid-diagram');
+    const mermaidSource = document.querySelector('pre[data-language="mermaid"]');
+
+    return {
+      articleWidth: article ? Number.parseFloat(getComputedStyle(article).width) : 0,
+      diagramOverflow: diagram ? diagram.scrollWidth >= diagram.clientWidth : false,
+      hasHorizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+      hasClientMermaidSource: Boolean(mermaidSource),
+    };
+  });
+
+  expect(articleMetrics.articleWidth).toBeGreaterThan(0);
+  expect(articleMetrics.articleWidth).toBeLessThanOrEqual(760);
+  expect(articleMetrics.diagramOverflow).toBe(true);
+  expect(articleMetrics.hasHorizontalOverflow).toBe(false);
+  expect(articleMetrics.hasClientMermaidSource).toBe(false);
 });
