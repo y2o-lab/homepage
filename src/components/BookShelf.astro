@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entries: CollectionEntry<'books'>[];
+}
+
+const { entries } = Astro.props;
+
+const statusLabels = {
+  reading: '読書中',
+  finished: '読了',
+  paused: '一時停止',
+} as const;
+---
+
+{
+  entries.length > 0 ? (
+    <section class="bookshelf" aria-label="本棚" data-testid="bookshelf">
+      <div class="bookshelf__heading">
+        <p>Reading shelf</p>
+        <span>{entries.length} 冊の記録</span>
+      </div>
+      <ul class="bookshelf__grid">
+        {entries.map((entry) => (
+          <li class="book-card">
+            <a href={`/books/${entry.id}/`} aria-label={`${entry.data.bookTitle} のメモを読む`}>
+              <div class="book-card__cover">
+                <img
+                  src={entry.data.coverImage}
+                  alt={entry.data.coverAlt ?? `${entry.data.bookTitle}の表紙`}
+                  loading="lazy"
+                  width="1024"
+                  height="1536"
+                />
+                <span class="book-card__status">{statusLabels[entry.data.status]}</span>
+              </div>
+              <div class="book-card__details">
+                <h2>{entry.data.bookTitle}</h2>
+                {entry.data.bookAuthor && <p>{entry.data.bookAuthor}</p>}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ) : (
+    <p class="empty">まだ本棚に並んでいる本はありません。</p>
+  )
+}

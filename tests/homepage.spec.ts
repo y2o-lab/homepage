@@ -144,3 +144,27 @@ test('renders rich markdown content and mermaid diagrams', async ({ page }) => {
   expect(articleMetrics.hasHorizontalOverflow).toBe(false);
   expect(articleMetrics.hasClientMermaidSource).toBe(false);
 });
+
+test('shows reading notes as a shelf of book covers and opens a note', async ({ page }) => {
+  await page.goto('/books/');
+
+  const shelf = page.getByTestId('bookshelf');
+  await expect(shelf).toBeVisible();
+  await expect(shelf.getByRole('listitem')).toHaveCount(4);
+  const shelfColumns = await shelf
+    .locator('.bookshelf__grid')
+    .evaluate(
+      (element) => getComputedStyle(element).gridTemplateColumns.trim().split(/\s+/).length,
+    );
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  expect(shelfColumns).toBe(viewportWidth <= 720 ? 2 : 4);
+  await expect(
+    shelf.getByRole('img', { name: 'テラコッタ色の表紙のハードカバー本' }),
+  ).toBeVisible();
+  await shelf.getByRole('link', { name: 'サンプル書籍 のメモを読む' }).click();
+
+  await expect(page).toHaveURL(/\/books\/sample-book\/$/);
+  await expect(page.getByRole('heading', { name: '読書メモのサンプル' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'この本から持ち帰ったこと' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '← 本棚に戻る' })).toBeVisible();
+});

@@ -16,22 +16,47 @@ interface Props {
   entry: CollectionEntry<'books'>;
 }
 
-const { entry } = Astro.props;
+const { entry } = Astro.props as Props;
 const { Content } = await render(entry);
+const statusLabels = {
+  reading: '読書中',
+  finished: '読了',
+  paused: '一時停止',
+} as const;
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>
-  <article class="prose content-article">
-    <p class="eyebrow">{sectionLabels.books}</p>
-    <h1>{entry.data.title}</h1>
-    <div class="meta">
-      <time datetime={entry.data.pubDate.toISOString()}
-        >{formatDate(entry.data.pubDate)}</time
-      >
-      <span>{entry.data.bookTitle}</span>
-      {entry.data.bookAuthor && <span>{entry.data.bookAuthor}</span>}
-      <span>{entry.data.status}</span>
+  <article class="book-note">
+    <a class="book-note__back" href="/books/">← 本棚に戻る</a>
+    <header class="book-note__header">
+      <img
+        class="book-note__cover"
+        src={entry.data.coverImage}
+        alt={entry.data.coverAlt ?? `${entry.data.bookTitle}の表紙`}
+        width="1024"
+        height="1536"
+      />
+      <div>
+        <p class="eyebrow">{sectionLabels.books}</p>
+        <h1>{entry.data.title}</h1>
+        <p class="book-note__title">{entry.data.bookTitle}</p>
+        {entry.data.bookAuthor && <p class="book-note__author">{entry.data.bookAuthor}</p>}
+        <dl class="book-note__meta">
+          <div>
+            <dt>記録日</dt>
+            <dd>
+              <time datetime={entry.data.pubDate.toISOString()}>{formatDate(entry.data.pubDate)}</time>
+            </dd>
+          </div>
+          <div>
+            <dt>ステータス</dt>
+            <dd>{statusLabels[entry.data.status]}</dd>
+          </div>
+        </dl>
+      </div>
+    </header>
+    <div class="prose content-article book-note__content">
+      <Content />
     </div>
-    <Content />
   </article>
 </BaseLayout>

@@ -28,6 +28,8 @@ const books = defineCollection({
   schema: commonContentSchema.extend({
     bookTitle: z.string(),
     bookAuthor: z.string().optional(),
+    coverImage: z.string().startsWith('/'),
+    coverAlt: z.string().optional(),
     status: z.enum(['reading', 'finished', 'paused']).default('reading'),
   }),
 });

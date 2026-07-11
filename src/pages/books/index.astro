@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import EntryList from '@/components/EntryList.astro';
+import BookShelf from '@/components/BookShelf.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { byNewest, isPublished, sectionDescriptions, sectionLabels } from '@/lib/content';
 
@@ -17,5 +17,5 @@ const entries = (await getCollection(section)).filter(isPublished).sort(byNewest
     <h1>{sectionLabels[section]}</h1>
     <p class="lead">{sectionDescriptions[section]}</p>
   </section>
-  <EntryList entries={entries} section={section} />
+  <BookShelf entries={entries} />
 </BaseLayout>
