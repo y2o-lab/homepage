@@ -63,6 +63,8 @@ topic: "Astro"
 ```yaml
 bookTitle: "Book title"
 bookAuthor: "Author name"
+coverImage: "/books/book-cover.png"
+coverAlt: "表紙を説明する代替テキスト"
 status: "reading"
 ```
 
