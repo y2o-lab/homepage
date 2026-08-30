@@ -1,24 +1,28 @@
 variable "cloudflare_account_id" {
-  description = "TODO: Cloudflare account ID that owns the Pages project."
+  description = "Cloudflare account ID that owns the Pages project."
   type        = string
+  default     = "06109ed4642ce78eccfe61da32f44c9b"
   nullable    = false
 }
 
 variable "cloudflare_zone_id" {
-  description = "TODO: Existing Cloudflare zone ID that contains custom_domain."
+  description = "Existing Cloudflare zone ID that contains custom_domain."
   type        = string
+  default     = "ff325226cc30d0e6e3d50f7368d2f4a5"
   nullable    = false
 }
 
 variable "custom_domain" {
-  description = "TODO: Production hostname to attach to Cloudflare Pages."
+  description = "Production hostname to attach to Cloudflare Pages."
   type        = string
+  default     = "yuno-i.com"
   nullable    = false
 }
 
 variable "dns_record_name" {
-  description = "TODO: DNS record name in the Cloudflare zone; use @ for the apex."
+  description = "DNS record name in the Cloudflare zone; use @ for the apex."
   type        = string
+  default     = "@"
   nullable    = false
 }
 
@@ -31,5 +35,6 @@ variable "manage_dns_record" {
 variable "project_name" {
   description = "TODO: Cloudflare Pages project name."
   type        = string
+  default     = "homepage"
   nullable    = false
 }
