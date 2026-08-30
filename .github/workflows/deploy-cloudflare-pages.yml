@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     env:
-      SITE_URL: https://${{ secrets.TF_VAR_custom_domain }}
+      SITE_URL: https://yuno-i.com
 
     steps:
       - name: Check out source
@@ -50,13 +50,13 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: '4.120.0'
-          command: pages deploy dist --project-name=${{ secrets.TF_VAR_project_name }} --branch=release
+          command: pages deploy dist --project-name=homepage --branch=release
 
       - name: Remove inactive Cloudflare Pages deployments
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          PROJECT_NAME: ${{ secrets.TF_VAR_project_name }}
+          PROJECT_NAME: homepage
         run: |
           active_deployment_id=''
           while true; do

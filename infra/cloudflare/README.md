@@ -17,14 +17,12 @@ Terraform が管理するものは次のとおりです。
 1. Cloudflare に対象ドメインの zone を追加し、apex domain を使う場合は nameserver を Cloudflare に向けます。
 2. Terraform state 専用の R2 bucket を作成します。state backend 自身は Terraform で作成できないため、Cloudflare dashboard または `wrangler r2 bucket create <TODO_BUCKET_NAME>` で先に作成してください。
 3. その bucket に限定した `Object Read & Write` 権限の R2 API token を作成し、Access Key ID と Secret Access Key を控えます。
-4. `terraform.tfvars.example` と `backend.hcl.example` をコピーし、すべての `TODO` を実値に置き換えます。実ファイルは Git にコミットしません。
+4. `backend.tf` には state backend の非機密な接続先を設定済みです。`terraform.tfvars.example` は default をローカルで上書きするときだけコピーして使います。API token などの認証情報は Git にコミットしません。
 
 ```sh
 mise install
 
 cd infra/cloudflare/environments/production
-cp terraform.tfvars.example terraform.tfvars
-cp backend.hcl.example backend.hcl
 
 export CLOUDFLARE_API_TOKEN='TODO: Cloudflare API token'
 export AWS_ACCESS_KEY_ID='TODO: R2 access key ID'
@@ -49,21 +47,10 @@ mise exec terraform -- terraform apply
 | `CLOUDFLARE_ACCOUNT_ID` | Terraform と Wrangler の Cloudflare account ID。 |
 | `R2_ACCESS_KEY_ID` | Terraform backend 用の R2 Access Key ID。 |
 | `R2_SECRET_ACCESS_KEY` | Terraform backend 用の R2 Secret Access Key。 |
-| `TF_BACKEND_BUCKET` | Terraform state 用 R2 bucket 名。 |
-| `TF_BACKEND_ENDPOINT` | `https://TODO_ACCOUNT_ID.r2.cloudflarestorage.com`。 |
 
-`TF_BACKEND_BUCKET` と `TF_BACKEND_ENDPOINT` は機密情報ではありませんが、workflow で一貫して扱うため secrets として指定しています。GitHub repository variables に切り替える場合は workflow の `secrets.` を `vars.` に置き換えてください。
+Terraform state の R2 bucket 名と endpoint は `backend.tf` にあり、GitHub Secret は不要です。
 
-Terraform の入力値は workflow が `CLOUDFLARE_ACCOUNT_ID` と、Git にコミットしない `terraform.tfvars` ではなく GitHub secrets から受け取ります。現在は `terraform.tfvars` に custom domain などの非機密設定を置くため、CI では `TF_VAR_*` secrets を追加してください。
-
-| Required CI secret | 値 |
-| --- | --- |
-| `TF_VAR_project_name` | TODO: Pages project name |
-| `TF_VAR_custom_domain` | TODO: production hostname（例: `example.com`） |
-| `TF_VAR_cloudflare_zone_id` | TODO: Cloudflare zone ID |
-| `TF_VAR_dns_record_name` | TODO: zone 内の record name（apex は `@`） |
-
-`terraform.tfvars` を GitHub Actions でも使う場合は、上記 `TF_VAR_*` secrets の代わりに安全な設定配布方法を用意してください。`terraform.tfvars` 自体をコミットする場合も、API token などの secret は絶対に含めません。
+`project_name`、`custom_domain`、`cloudflare_zone_id`、`dns_record_name` は production の `variables.tf` にある default を CI でも使います。そのため、これらの `TF_VAR_*` secrets は不要です。`terraform.tfvars` を作成する場合も、API token などの secret は絶対に含めません。
 
 ## 既存リソース
 

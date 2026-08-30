@@ -43,4 +43,4 @@ Frontmatter の型は `src/content.config.ts` で管理しています。
 
 ## Site URL
 
-ローカルでは `http://localhost:4321` を使用します。production では GitHub Actions が Terraform output の custom domain を `SITE_URL` として渡し、RSS と sitemap の URL を生成します。Cloudflare Pages / Terraform / GitHub Actions の初回設定は [infra/cloudflare/README.md](infra/cloudflare/README.md) を参照してください。
+ローカルでは `http://localhost:4321` を使用します。production では GitHub Actions が `SITE_URL` を渡し、RSS と sitemap の URL を生成します。値は Terraform の production `custom_domain` と一致させてください。Cloudflare Pages / Terraform / GitHub Actions の初回設定は [infra/cloudflare/README.md](infra/cloudflare/README.md) を参照してください。

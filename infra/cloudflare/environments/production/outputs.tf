@@ -1,5 +1,5 @@
 output "custom_domain" {
-  description = "Production custom domain; GitHub Actions passes this to Astro as SITE_URL."
+  description = "Production custom domain. Keep the deployment workflow SITE_URL in sync with this value."
   value       = module.pages_site.custom_domain
 }
 

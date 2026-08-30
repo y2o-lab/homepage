@@ -27,13 +27,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      TF_BACKEND_BUCKET: ${{ secrets.TF_BACKEND_BUCKET }}
-      TF_BACKEND_ENDPOINT: ${{ secrets.TF_BACKEND_ENDPOINT }}
       TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      TF_VAR_cloudflare_zone_id: ${{ secrets.TF_VAR_cloudflare_zone_id }}
-      TF_VAR_custom_domain: ${{ secrets.TF_VAR_custom_domain }}
-      TF_VAR_dns_record_name: ${{ secrets.TF_VAR_dns_record_name }}
-      TF_VAR_project_name: ${{ secrets.TF_VAR_project_name }}
 
     steps:
       - name: Check out source
@@ -52,12 +46,7 @@ jobs:
 
       - name: Initialize Terraform backend
         working-directory: infra/cloudflare/environments/production
-        run: >-
-          mise exec terraform -- terraform init -input=false
-          -backend-config="bucket=$TF_BACKEND_BUCKET"
-          -backend-config="key=cloudflare/production/terraform.tfstate"
-          -backend-config="region=auto"
-          -backend-config="endpoints={s3=\"$TF_BACKEND_ENDPOINT\"}"
+        run: mise exec terraform -- terraform init -input=false
 
       - name: Validate Terraform
         working-directory: infra/cloudflare/environments/production
@@ -79,13 +68,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      TF_BACKEND_BUCKET: ${{ secrets.TF_BACKEND_BUCKET }}
-      TF_BACKEND_ENDPOINT: ${{ secrets.TF_BACKEND_ENDPOINT }}
       TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      TF_VAR_cloudflare_zone_id: ${{ secrets.TF_VAR_cloudflare_zone_id }}
-      TF_VAR_custom_domain: ${{ secrets.TF_VAR_custom_domain }}
-      TF_VAR_dns_record_name: ${{ secrets.TF_VAR_dns_record_name }}
-      TF_VAR_project_name: ${{ secrets.TF_VAR_project_name }}
 
     steps:
       - name: Check out source
@@ -104,12 +87,7 @@ jobs:
 
       - name: Initialize Terraform backend
         working-directory: infra/cloudflare/environments/production
-        run: >-
-          mise exec terraform -- terraform init -input=false
-          -backend-config="bucket=$TF_BACKEND_BUCKET"
-          -backend-config="key=cloudflare/production/terraform.tfstate"
-          -backend-config="region=auto"
-          -backend-config="endpoints={s3=\"$TF_BACKEND_ENDPOINT\"}"
+        run: mise exec terraform -- terraform init -input=false
 
       - name: Validate Terraform
         working-directory: infra/cloudflare/environments/production
