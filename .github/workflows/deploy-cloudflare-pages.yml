@@ -74,7 +74,16 @@ jobs:
         run: |
           active_deployment_id=''
           while true; do
-            deployment_ids="$(pnpm dlx wrangler@4.120.0 pages deployment list --project-name "$PROJECT_NAME" --json | jq -r '.[] | (.Id // .id)')"
+            if ! deployment_json="$(pnpm exec wrangler pages deployment list --project-name "$PROJECT_NAME" --json)"; then
+              echo 'Failed to list Cloudflare Pages deployments.' >&2
+              exit 1
+            fi
+
+            if ! deployment_ids="$(printf '%s\n' "$deployment_json" | jq -r '.[] | (.Id // .id) | select(type == "string" and length > 0)')"; then
+              echo 'Failed to read Cloudflare Pages deployment IDs.' >&2
+              exit 1
+            fi
+
             deployment_ids="$(printf '%s\n' "$deployment_ids" | grep -v -F -x "$active_deployment_id" || true)"
 
             if [ -z "$deployment_ids" ]; then
@@ -85,7 +94,7 @@ jobs:
             while IFS= read -r deployment_id; do
               [ -z "$deployment_id" ] && continue
 
-              delete_output="$(pnpm dlx wrangler@4.120.0 pages deployment delete "$deployment_id" --project-name "$PROJECT_NAME" --force 2>&1)"
+              delete_output="$(pnpm exec wrangler pages deployment delete "$deployment_id" --project-name "$PROJECT_NAME" --force 2>&1)"
               printf '%s\n' "$delete_output"
 
               if printf '%s\n' "$delete_output" | grep -q 'Successfully deleted'; then
