@@ -31,3 +31,6 @@ pnpm-debug.log*
 !**/backend.hcl.example
 crash.log
 crash.*.log
+
+# local harness output
+.harness/events.ndjson
