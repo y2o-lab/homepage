@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type AnyEntry, byNewest, formatDate, isPublished } from '../src/lib/content';
+import { type AnyEntry, byNewest, byTakenDate, formatDate, isPublished } from '../src/lib/content';
 
 function entry(pubDate: Date, draft = false) {
   return {
@@ -21,6 +21,21 @@ describe('content helpers', () => {
     const newer = entry(new Date('2026-01-01'));
 
     expect([older, newer].sort(byNewest)).toEqual([newer, older]);
+  });
+
+  it('sorts photos by newest capture date first', () => {
+    const older = {
+      data: {
+        takenDate: new Date('2025-01-01'),
+      },
+    } as unknown as Parameters<typeof byTakenDate>[0];
+    const newer = {
+      data: {
+        takenDate: new Date('2026-01-01'),
+      },
+    } as unknown as Parameters<typeof byTakenDate>[0];
+
+    expect([older, newer].sort(byTakenDate)).toEqual([newer, older]);
   });
 
   it('formats dates for Japanese readers', () => {

@@ -1,0 +1,5 @@
+# Replaced photo UI proposal routes
+/photo-ui /photos/ 301
+/photo-ui/ /photos/ 301
+/photo-ui/scale /photos/ 301
+/photo-ui/scale/ /photos/ 301
