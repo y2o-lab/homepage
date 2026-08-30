@@ -7,7 +7,7 @@ import { defineConfig } from 'astro/config';
 import { remarkMermaidSvg } from './src/lib/remark-mermaid-svg.mjs';
 
 export default defineConfig({
-  site: 'http://localhost:4321',
+  site: process.env.SITE_URL ?? 'http://localhost:4321',
   devToolbar: {
     enabled: false,
   },

@@ -1,0 +1,9 @@
+# TODO: Replace every value with this site's production settings.
+cloudflare_account_id = "TODO_CLOUDFLARE_ACCOUNT_ID"
+cloudflare_zone_id    = "TODO_CLOUDFLARE_ZONE_ID"
+project_name          = "TODO-pages-project-name"
+custom_domain         = "TODO.example.com"
+
+# @ is the apex of the zone. For www.example.com in the example.com zone, use www.
+dns_record_name   = "@"
+manage_dns_record = true
