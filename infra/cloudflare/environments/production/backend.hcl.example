@@ -1,0 +1,8 @@
+# TODO: R2 bucket created before Terraform init. Do not use this bucket for app assets.
+bucket = "TODO-terraform-state-bucket"
+key    = "production/terraform.tfstate"
+
+# TODO: Replace TODO_ACCOUNT_ID with the Cloudflare account ID that owns the R2 bucket.
+endpoints = {
+  s3 = "https://TODO_ACCOUNT_ID.r2.cloudflarestorage.com"
+}

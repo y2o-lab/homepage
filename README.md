@@ -16,6 +16,13 @@ pnpm build
 pnpm preview
 ```
 
+Terraform は [mise](https://mise.jdx.dev/) で管理しています。
+
+```sh
+mise install
+mise exec terraform -- terraform fmt -check -recursive infra
+```
+
 ## Content
 
 - `src/content/blog`: ブログ
@@ -36,4 +43,4 @@ Frontmatter の型は `src/content.config.ts` で管理しています。
 
 ## Site URL
 
-公開 URL が決まったら、`astro.config.mjs` と `src/site.config.ts` の `http://localhost:4321` を実際の URL に変更してください。RSS と sitemap の URL 生成に使います。
+ローカルでは `http://localhost:4321` を使用します。production では GitHub Actions が `SITE_URL` を渡し、RSS と sitemap の URL を生成します。値は Terraform の production `custom_domain` と一致させてください。Cloudflare Pages / Terraform / GitHub Actions の初回設定は [infra/cloudflare/README.md](infra/cloudflare/README.md) を参照してください。
