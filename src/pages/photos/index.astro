@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import PhotoGallery from '@/components/PhotoGallery.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { byTakenDate, isPublished } from '@/lib/content';
+
+const photos = (await getCollection('photos')).filter(isPublished).sort(byTakenDate);
+---
+
+<BaseLayout title="写真" description="日々の記録として残した写真です。">
+  <section class="photo-hero" aria-labelledby="photos-title">
+    <p class="eyebrow">Photos</p>
+    <h1 id="photos-title">写真</h1>
+    <p class="lead">日々の記録として残した写真です。</p>
+  </section>
+
+  <PhotoGallery photos={photos} />
+</BaseLayout>
+
+<style>
+  :global(main) {
+    max-width: 1280px;
+  }
+
+  .photo-hero {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: clamp(1.2rem, 3vw, 2rem);
+    padding-bottom: clamp(1rem, 3vw, 1.7rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .photo-hero h1 {
+    max-width: 8ch;
+  }
+
+  @media (max-width: 820px) {
+    .photo-hero h1 {
+      max-width: 100%;
+      font-size: clamp(2rem, 12vw, 3rem);
+    }
+  }
+</style>

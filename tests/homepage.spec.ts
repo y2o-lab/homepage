@@ -11,8 +11,7 @@ const themedRoutes = [
   '/notes/astro-content-collections/',
   '/books/',
   '/books/sample-book/',
-  '/photo-ui/',
-  '/photo-ui/scale/',
+  '/photos/',
 ] as const;
 
 test('renders the desk board homepage navigation and key panels', async ({ page }) => {
@@ -25,7 +24,7 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
   await expect(navigation.getByRole('link', { name: '作ったもの' })).toBeVisible();
   await expect(navigation.getByRole('link', { name: '勉強メモ' })).toBeVisible();
   await expect(navigation.getByRole('link', { name: '書籍メモ' })).toBeVisible();
-  await expect(navigation.getByRole('link', { name: '写真UI案' })).toBeVisible();
+  await expect(navigation.getByRole('link', { name: '写真' })).toBeVisible();
   await expect(page.getByLabel('プロフィール概要')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Build notes for the web.' })).toBeVisible();
   await expect(page.getByLabel('現在の活動')).toBeVisible();

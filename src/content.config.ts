@@ -43,4 +43,15 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { blog, notes, books, projects };
+const photos = defineCollection({
+  loader: glob({ base: './src/content/photos', pattern: '**/*.{md,mdx}' }),
+  schema: commonContentSchema.extend({
+    takenDate: z.coerce.date(),
+    image: z.string().startsWith('/'),
+    imageAlt: z.string(),
+    imageWidth: z.number().int().positive(),
+    imageHeight: z.number().int().positive(),
+  }),
+});
+
+export const collections = { blog, notes, books, projects, photos };
