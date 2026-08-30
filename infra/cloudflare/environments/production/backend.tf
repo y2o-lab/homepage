@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket                      = "homepage-tf-backend"
-    key                         = "cloudflare/production/terraform.tfstate"
+    key                         = "production/terraform.tfstate"
     region                      = "auto"
     use_lockfile                = true
     use_path_style              = true
