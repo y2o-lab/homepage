@@ -19,7 +19,10 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
 
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
 
-  await expect(page).toHaveTitle(/inoue\./);
+  await expect(page).toHaveTitle('yuno');
+  await expect(page.getByRole('link', { name: 'yuno のトップへ' })).toHaveText('yuno');
+  await expect(page.getByRole('contentinfo')).toContainText('yuno');
+  await expect(page.getByRole('img', { name: 'yuno のプロフィールアイコン' })).toBeVisible();
   await expect(navigation.getByRole('link', { name: 'ブログ' })).toBeVisible();
   await expect(navigation.getByRole('link', { name: '作ったもの' })).toBeVisible();
   await expect(navigation.getByRole('link', { name: '勉強メモ' })).toBeVisible();
