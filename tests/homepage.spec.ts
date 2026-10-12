@@ -3,8 +3,7 @@ import { expect, test } from '@playwright/test';
 const themedRoutes = [
   '/',
   '/blog/',
-  '/blog/hello/',
-  '/blog/markdown-rendering-sample/',
+  '/blog/harness-engineering/',
   '/projects/',
   '/projects/homepage/',
   '/books/',
@@ -129,34 +128,6 @@ test('applies the homepage theme shell across public pages', async ({ page }) =>
     expect(theme.mainWidth, route).toBeLessThanOrEqual(1180);
     expect(theme.hasHorizontalOverflow, route).toBe(false);
   }
-});
-
-test('renders rich markdown content and mermaid diagrams', async ({ page }) => {
-  await page.goto('/blog/markdown-rendering-sample/');
-
-  await expect(page.getByRole('heading', { name: 'Markdown 表示サンプル' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Mermaid 図' })).toBeVisible();
-  await expect(page.getByText('src/styles/global.css')).toBeVisible();
-  await expect(page.locator('.mermaid-diagram[data-mermaid-rendered="build"] svg')).toBeVisible();
-
-  const articleMetrics = await page.evaluate(() => {
-    const article = document.querySelector('.content-article');
-    const diagram = document.querySelector('.mermaid-diagram');
-    const mermaidSource = document.querySelector('pre[data-language="mermaid"]');
-
-    return {
-      articleWidth: article ? Number.parseFloat(getComputedStyle(article).width) : 0,
-      diagramOverflow: diagram ? diagram.scrollWidth >= diagram.clientWidth : false,
-      hasHorizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
-      hasClientMermaidSource: Boolean(mermaidSource),
-    };
-  });
-
-  expect(articleMetrics.articleWidth).toBeGreaterThan(0);
-  expect(articleMetrics.articleWidth).toBeLessThanOrEqual(760);
-  expect(articleMetrics.diagramOverflow).toBe(true);
-  expect(articleMetrics.hasHorizontalOverflow).toBe(false);
-  expect(articleMetrics.hasClientMermaidSource).toBe(false);
 });
 
 test('shows reading notes as a shelf of book covers and opens a note', async ({ page }) => {

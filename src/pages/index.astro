@@ -36,8 +36,8 @@ const latestEntries = sectionEntries
       <p class="kicker">Personal site</p>
       <h1 class="hero-title" id="home-title">Build notes for the web.</h1>
       <p class="hero-copy">
-        作ったもの、使っている技術、最近の関心を一覧しやすくまとめるポートフォリオ寄りのホームです。
-        制作ログや学びのメモへ、ここからすぐ移動できます。
+        Webアプリケーションエンジニアやってます。<br />
+        のんびりやっていきたい☕️
       </p>
       <div class="sidebar-actions" aria-label="主要リンク">
         <a class="button" href="/projects/" lang="en">View Projects</a>
@@ -67,6 +67,7 @@ const latestEntries = sectionEntries
                 <a href={section === 'photos' ? '/photos/' : `/${section}/${entry.id}/`}>
                   <span lang="en">{sectionLabels[section]}</span>
                   <strong>{entry.data.title}</strong>
+                  <p class="latest-description">{entry.data.description}</p>
                   <time datetime={entry.data.pubDate.toISOString()}>
                     {formatDate(entry.data.pubDate)}
                   </time>
@@ -337,6 +338,17 @@ const latestEntries = sectionEntries
     color: rgb(46 38 29 / 0.64);
     font-size: 0.78rem;
     font-weight: 800;
+  }
+
+  .latest-description {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    color: rgb(46 38 29 / 0.68);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 
   .project-grid {
