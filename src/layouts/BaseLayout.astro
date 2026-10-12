@@ -1,6 +1,7 @@
 ---
 import '@/styles/global.css';
-import { site } from '@/site.config';
+import { sectionLabels } from '@/lib/content';
+import { navigationSections, site } from '@/site.config';
 
 interface Props {
   title?: string;
@@ -35,11 +36,9 @@ const description = Astro.props.description ?? site.description;
         >{site.title}</a
       >
       <nav aria-label="Primary navigation">
-        <a href="/blog/">ブログ</a>
-        <a href="/projects/">作ったもの</a>
-        <a href="/notes/">勉強メモ</a>
-        <a href="/books/">書籍メモ</a>
-        <a href="/photos/">写真</a>
+        {navigationSections.map((section) => (
+          <a href={`/${section}/`} lang="en">{sectionLabels[section]}</a>
+        ))}
       </nav>
     </header>
     <main>

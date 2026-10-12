@@ -7,8 +7,6 @@ const themedRoutes = [
   '/blog/markdown-rendering-sample/',
   '/projects/',
   '/projects/homepage/',
-  '/notes/',
-  '/notes/astro-content-collections/',
   '/books/',
   '/books/sample-book/',
   '/photos/',
@@ -23,16 +21,30 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
   await expect(page.getByRole('link', { name: 'yuno のトップへ' })).toHaveText('yuno');
   await expect(page.getByRole('contentinfo')).toContainText('yuno');
   await expect(page.getByRole('img', { name: 'yuno のプロフィールアイコン' })).toBeVisible();
-  await expect(navigation.getByRole('link', { name: 'ブログ' })).toBeVisible();
-  await expect(navigation.getByRole('link', { name: '作ったもの' })).toBeVisible();
-  await expect(navigation.getByRole('link', { name: '勉強メモ' })).toBeVisible();
-  await expect(navigation.getByRole('link', { name: '書籍メモ' })).toBeVisible();
-  await expect(navigation.getByRole('link', { name: '写真' })).toBeVisible();
+  await expect(navigation.getByRole('link')).toHaveCount(4);
+  for (const [name, href] of [
+    ['Blog', '/blog/'],
+    ['Projects', '/projects/'],
+    ['Reading', '/books/'],
+    ['Photography', '/photos/'],
+  ]) {
+    const link = navigation.getByRole('link', { name, exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('href', href);
+  }
+  await expect(navigation.locator('a[href="/notes/"]')).toHaveCount(0);
   await expect(page.getByLabel('プロフィール概要')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Build notes for the web.' })).toBeVisible();
   await expect(page.getByLabel('現在の活動')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'View Works' })).toBeVisible();
-  await expect(page.getByRole('link', { name: '作ったものを見る' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View Projects' })).toHaveCount(2);
+  await expect(page.locator('a[href^="/notes/"]')).toHaveCount(0);
+  await expect(page.locator('.project-card')).toHaveCount(4);
+  await expect(page.locator('.project-card h3')).toHaveText([
+    'Blog',
+    'Projects',
+    'Reading',
+    'Photography',
+  ]);
   await expect(page.getByRole('heading', { name: '最近の更新' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
   await expect(page.getByTestId('home-dashboard')).toBeVisible();
@@ -168,5 +180,40 @@ test('shows reading notes as a shelf of book covers and opens a note', async ({ 
   await expect(page).toHaveURL(/\/books\/sample-book\/$/);
   await expect(page.getByRole('heading', { name: '読書メモのサンプル' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'この本から持ち帰ったこと' })).toBeVisible();
-  await expect(page.getByRole('link', { name: '← 本棚に戻る' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '← Reading に戻る' })).toBeVisible();
+});
+
+test('opens each portfolio section with a matching heading and title', async ({ page }) => {
+  await page.goto('/');
+
+  for (const [name, href] of [
+    ['Blog', '/blog/'],
+    ['Projects', '/projects/'],
+    ['Reading', '/books/'],
+    ['Photography', '/photos/'],
+  ]) {
+    await page.getByRole('navigation').getByRole('link', { name, exact: true }).click();
+    await expect(page).toHaveURL(href);
+    await expect(page).toHaveTitle(`${name} | yuno`);
+    await expect(page.getByRole('heading', { name, exact: true, level: 1 })).toBeVisible();
+  }
+
+  await page.goto('/');
+  for (const href of await page
+    .locator('.latest-list a, .project-card')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href')))) {
+    if (!href) throw new Error('homepage link has no destination');
+    const response = await page.goto(href);
+    expect(response?.status(), href).toBe(200);
+  }
+});
+
+test('returns 404 for removed study note routes', async ({ request }) => {
+  for (const route of ['/notes/', '/notes/astro-content-collections/']) {
+    const response = await request.get(route);
+    expect(response.status(), route).toBe(404);
+  }
+  const sitemap = await request.get('/sitemap-0.xml');
+  expect(sitemap.status()).toBe(200);
+  expect(await sitemap.text()).not.toContain('/notes/');
 });

@@ -2,15 +2,15 @@
 import { getCollection } from 'astro:content';
 import PhotoGallery from '@/components/PhotoGallery.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { byTakenDate, isPublished } from '@/lib/content';
+import { byTakenDate, isPublished, sectionLabels } from '@/lib/content';
 
 const photos = (await getCollection('photos')).filter(isPublished).sort(byTakenDate);
 ---
 
-<BaseLayout title="写真" description="日々の記録として残した写真です。">
+<BaseLayout title={sectionLabels.photos} description="日々の記録として残した写真です。">
   <section class="photo-hero" aria-labelledby="photos-title">
-    <p class="eyebrow">Photos</p>
-    <h1 id="photos-title">写真</h1>
+    <p class="eyebrow" lang="en">Photography</p>
+    <h1 id="photos-title" lang="en">{sectionLabels.photos}</h1>
     <p class="lead">日々の記録として残した写真です。</p>
   </section>
 
