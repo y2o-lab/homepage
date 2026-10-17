@@ -1,6 +1,6 @@
 # homepage
 
-Astro で作る個人ホームページです。ブログ、作ったもの、勉強メモ、書籍メモを Markdown / MDX で管理できます。
+Astro で作る個人ホームページです。ブログ、制作物、読書の記録、写真を Markdown / MDX で管理できます。
 
 ## Commands
 
@@ -27,7 +27,6 @@ mise exec terraform -- terraform fmt -check -recursive infra
 
 - `src/content/blog`: ブログ
 - `src/content/projects`: 作ったもの
-- `src/content/notes`: 勉強メモ
 - `src/content/books`: 書籍メモ
 
 Frontmatter の型は `src/content.config.ts` で管理しています。
