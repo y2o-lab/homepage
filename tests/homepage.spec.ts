@@ -107,6 +107,9 @@ test('opens the Storymesh post from recent updates and the blog index', async ({
   await expect(
     page.getByRole('link', { name: 'https://github.com/y2o-lab/storymesh', exact: true }),
   ).toHaveAttribute('href', 'https://github.com/y2o-lab/storymesh');
+  await expect(
+    page.getByRole('link', { name: 'https://www.npmjs.com/package/storymesh', exact: true }),
+  ).toHaveAttribute('href', 'https://www.npmjs.com/package/storymesh');
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1),
   ).toBe(false);

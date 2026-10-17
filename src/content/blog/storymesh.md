@@ -16,8 +16,8 @@ tags:
 
 > ※ 本ツールはStorybookを用いる前提で利用するツールです。
 
-**リポジトリ**: https://github.com/y2o-lab/storymesh\
-**npm**: https://www.npmjs.com/package/storymesh
+**リポジトリ**: [https://github.com/y2o-lab/storymesh](https://github.com/y2o-lab/storymesh)\
+**npm**: [https://www.npmjs.com/package/storymesh](https://www.npmjs.com/package/storymesh)
 
 ## 背景・結論
 
