@@ -8,7 +8,7 @@ test('opens the reprinted article from the homepage and renders its content', as
 }, testInfo) => {
   await page.goto('/');
 
-  const latest = page.getByLabel('最近の更新').getByRole('link').first();
+  const latest = page.getByLabel('最近の更新').getByRole('link', { name: new RegExp(title) });
   await expect(latest).toContainText(title);
   await expect(latest).toContainText('AIエージェントを「お願い」ではなく「仕組み」で制御する。');
   await expect(latest).toHaveAttribute('href', route);
@@ -42,9 +42,8 @@ test('opens the reprinted article from the homepage and renders its content', as
 
   await article.getByRole('link', { name: '← Blog に戻る' }).click();
   await expect(page).toHaveURL('/blog/');
-  await expect(page.locator('.card')).toHaveCount(1);
-  await expect(page.locator('.card').first()).toContainText(title);
-  await page.locator('.card').first().click();
+  await expect(page.locator('.card')).toHaveCount(2);
+  await page.getByRole('link', { name: new RegExp(title) }).click();
   await expect(page).toHaveURL(route);
 });
 

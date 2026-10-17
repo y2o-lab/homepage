@@ -4,6 +4,7 @@ const themedRoutes = [
   '/',
   '/blog/',
   '/blog/harness-engineering/',
+  '/blog/storymesh/',
   '/projects/',
   '/projects/homepage/',
   '/books/',
@@ -87,6 +88,32 @@ test('keeps desk board readable without horizontal overflow', async ({ page }) =
   expect(hasHorizontalOverflow).toBe(false);
   await expect(page.getByRole('heading', { name: '最近の更新' })).toBeInViewport();
   await expect(page.getByRole('heading', { name: '見るもの' })).toBeInViewport();
+});
+
+test('opens the Storymesh post from recent updates and the blog index', async ({ page }) => {
+  const title = 'Storymesh — StorybookのStory不足を検知するOSSを作りました';
+  await page.goto('/');
+
+  const latestPost = page.getByLabel('最近の更新').getByRole('link').first();
+  await expect(latestPost).toContainText(title);
+  await expect(latestPost.locator('time')).toHaveAttribute('datetime', '2026-10-18T00:00:00.000Z');
+  await latestPost.click();
+
+  await expect(page).toHaveURL(/\/blog\/storymesh\/$/);
+  await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: '6. 既存のStoryからymlを作成する' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'https://github.com/y2o-lab/storymesh', exact: true }),
+  ).toHaveAttribute('href', 'https://github.com/y2o-lab/storymesh');
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1),
+  ).toBe(false);
+
+  await page.goto('/blog/');
+  await page.getByRole('link', { name: title }).click();
+  await expect(page).toHaveURL(/\/blog\/storymesh\/$/);
 });
 
 test('keeps primary layout readable on mobile', async ({ page }) => {
