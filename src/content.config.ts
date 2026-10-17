@@ -16,13 +16,6 @@ const blog = defineCollection({
   schema: commonContentSchema,
 });
 
-const notes = defineCollection({
-  loader: glob({ base: './src/content/notes', pattern: '**/*.{md,mdx}' }),
-  schema: commonContentSchema.extend({
-    topic: z.string().optional(),
-  }),
-});
-
 const books = defineCollection({
   loader: glob({ base: './src/content/books', pattern: '**/*.{md,mdx}' }),
   schema: commonContentSchema.extend({
@@ -54,4 +47,4 @@ const photos = defineCollection({
   }),
 });
 
-export const collections = { blog, notes, books, projects, photos };
+export const collections = { blog, books, projects, photos };

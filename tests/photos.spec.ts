@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('renders the latest photo prominently and opens the gallery lightbox', async ({ page }) => {
   await page.goto('/photos/');
 
-  await expect(page.getByRole('heading', { name: '写真' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Photography' })).toBeVisible();
   await expect(page.locator('[data-photo-gallery]')).toBeVisible();
   await expect(page.locator('.photo-card')).toHaveCount(9);
   await expect(page.locator('.photo-card--latest')).toHaveCount(1);

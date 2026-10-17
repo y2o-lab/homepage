@@ -3,17 +3,15 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import {
   byNewest,
-  type ContentSection,
   formatDate,
   isPublished,
   sectionDescriptions,
   sectionLabels,
 } from '@/lib/content';
-import { site } from '@/site.config';
+import { navigationSections, site } from '@/site.config';
 
-const sections: ContentSection[] = ['blog', 'projects', 'notes', 'books'];
 const sectionEntries = await Promise.all(
-  sections.map(async (section) => {
+  navigationSections.map(async (section) => {
     const entries = (await getCollection(section)).filter(isPublished).sort(byNewest);
 
     return {
@@ -38,11 +36,11 @@ const latestEntries = sectionEntries
       <p class="kicker">Personal site</p>
       <h1 class="hero-title" id="home-title">Build notes for the web.</h1>
       <p class="hero-copy">
-        作ったもの、使っている技術、最近の関心を一覧しやすくまとめるポートフォリオ寄りのホームです。
-        制作ログや学びのメモへ、ここからすぐ移動できます。
+        Webアプリケーションエンジニアやってます。<br />
+        のんびりやっていきたい☕️
       </p>
       <div class="sidebar-actions" aria-label="主要リンク">
-        <a class="button" href="/projects/">View Works</a>
+        <a class="button" href="/projects/" lang="en">View Projects</a>
         <a class="button secondary" href="/blog/">Read Blog</a>
       </div>
     </aside>
@@ -54,7 +52,7 @@ const latestEntries = sectionEntries
           <span class="chip">Astro</span>
           <span class="chip">TypeScript</span>
         </div>
-        <a class="button" href="/projects/">作ったものを見る</a>
+        <a class="button" href="/projects/" lang="en">View Projects</a>
       </div>
 
       <section class="latest-panel" aria-labelledby="latest-title">
@@ -66,9 +64,10 @@ const latestEntries = sectionEntries
           {
             latestEntries.length > 0 ? (
               latestEntries.map(({ entry, section }) => (
-                <a href={`/${section}/${entry.id}/`}>
-                  <span>{sectionLabels[section]}</span>
+                <a href={section === 'photos' ? '/photos/' : `/${section}/${entry.id}/`}>
+                  <span lang="en">{sectionLabels[section]}</span>
                   <strong>{entry.data.title}</strong>
+                  <p class="latest-description">{entry.data.description}</p>
                   <time datetime={entry.data.pubDate.toISOString()}>
                     {formatDate(entry.data.pubDate)}
                   </time>
@@ -91,7 +90,7 @@ const latestEntries = sectionEntries
             sectionEntries.map(({ section, entries, latestEntry }) => (
               <a class="project-card" href={`/${section}/`}>
                 <div>
-                  <h3>{sectionLabels[section]}</h3>
+                  <h3 lang="en">{sectionLabels[section]}</h3>
                   <p>{sectionDescriptions[section]}</p>
                 </div>
                 <div class="project-meta">
@@ -339,6 +338,17 @@ const latestEntries = sectionEntries
     color: rgb(46 38 29 / 0.64);
     font-size: 0.78rem;
     font-weight: 800;
+  }
+
+  .latest-description {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    color: rgb(46 38 29 / 0.68);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 
   .project-grid {

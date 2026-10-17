@@ -14,7 +14,7 @@ const entries = (await getCollection(section)).filter(isPublished).sort(byNewest
 >
   <section class="section-header">
     <p class="eyebrow">Blog</p>
-    <h1>{sectionLabels[section]}</h1>
+    <h1 lang="en">{sectionLabels[section]}</h1>
     <p class="lead">{sectionDescriptions[section]}</p>
   </section>
   <EntryList entries={entries} section={section} />
