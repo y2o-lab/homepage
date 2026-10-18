@@ -30,8 +30,11 @@ const books = defineCollection({
 const projects = defineCollection({
   loader: glob({ base: './src/content/projects', pattern: '**/*.{md,mdx}' }),
   schema: commonContentSchema.extend({
-    url: z.url().optional(),
+    kind: z.enum(['web', 'cli', 'library']).default('web'),
+    url: z.union([z.url(), z.literal('/')]).optional(),
     repository: z.url().optional(),
+    npm: z.url().optional(),
+    blogId: z.string().min(1).optional(),
     featured: z.boolean().default(false),
   }),
 });

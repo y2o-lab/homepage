@@ -64,7 +64,7 @@ const latestEntries = sectionEntries
           {
             latestEntries.length > 0 ? (
               latestEntries.map(({ entry, section }) => (
-                <a href={section === 'photos' ? '/photos/' : `/${section}/${entry.id}/`}>
+                <a href={section === 'photos' || section === 'projects' ? `/${section}/` : `/${section}/${entry.id}/`}>
                   <span lang="en">{sectionLabels[section]}</span>
                   <strong>{entry.data.title}</strong>
                   <p class="latest-description">{entry.data.description}</p>

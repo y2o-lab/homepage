@@ -41,3 +41,17 @@ export function formatDate(date: Date): string {
     timeZone: 'Asia/Tokyo',
   }).format(date);
 }
+
+export const projectKindLabels = {
+  web: 'Webサイト',
+  cli: 'CLIツール',
+  library: 'ライブラリ',
+} as const;
+
+export function getProjectBlogUrl(
+  blogId: string | undefined,
+  blogEntries: CollectionEntry<'blog'>[],
+): string | undefined {
+  const entry = blogEntries.find((entry) => entry.id === blogId && isPublished(entry));
+  return entry ? `/blog/${entry.id}/` : undefined;
+}
