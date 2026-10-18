@@ -1,8 +1,8 @@
-.works-preview {
+.projects-page {
   padding: 38px 0 28px;
 }
-.works-preview a:focus-visible,
-.works-preview button:focus-visible {
+.projects-page a:focus-visible,
+.projects-page button:focus-visible {
   outline: 2px solid var(--sage-dark);
   outline-offset: 5px;
 }
@@ -85,10 +85,6 @@
   color: var(--muted);
   font-size: 11px;
 }
-.project-status {
-  padding-left: 12px;
-  border-left: 1px solid var(--line);
-}
 .project-summary h2 {
   margin: 0 0 13px;
   font-family: var(--font-display);
@@ -163,14 +159,8 @@
 .project-detail-link:hover {
   text-decoration: underline;
 }
-.preview-note {
-  margin: 28px 0 0;
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.8;
-}
 @media (max-width: 720px) {
-  .works-preview {
+  .projects-page {
     padding-top: 28px;
   }
   .works-intro {

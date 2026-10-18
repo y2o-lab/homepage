@@ -1,12 +1,13 @@
 ---
-import type { PreviewProject } from '@/lib/project-preview';
+import type { CollectionEntry } from 'astro:content';
+import { site } from '@/site.config';
 
 interface Props {
-  project: PreviewProject;
+  project: CollectionEntry<'projects'>['data'];
 }
 const { project } = Astro.props;
 const links = [
-  { label: 'サイト', value: project.url },
+  { label: 'サイト', value: project.url === '/' ? new URL('/', site.url).href : project.url },
   { label: 'GitHub', value: project.repository },
   { label: 'npm', value: project.npm },
 ].filter((link) => link.value);

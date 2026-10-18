@@ -6,7 +6,6 @@ const themedRoutes = [
   '/blog/harness-engineering/',
   '/blog/storymesh/',
   '/projects/',
-  '/projects/homepage/',
   '/books/',
   '/books/sample-book/',
   '/photos/',
