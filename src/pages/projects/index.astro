@@ -10,13 +10,14 @@ const blogEntries = await getCollection('blog');
 const filters = [
   { kind: 'all', label: 'All' },
   { kind: 'web', label: 'Web' },
+  { kind: 'desktop', label: 'Desktop' },
   { kind: 'cli', label: 'CLI' },
   { kind: 'library', label: 'Libraries' },
 ].filter(
   (filter) => filter.kind === 'all' || entries.some((entry) => entry.data.kind === filter.kind),
 );
 ---
-<BaseLayout title="Projects" description="Webアプリ、CLIツール、ライブラリの紹介。">
+<BaseLayout title="Projects" description="Webアプリ、デスクトップアプリ、CLIツール、ライブラリの紹介。">
   <div class="projects-page">
     <header class="works-intro"><h1>Projects</h1><span class="project-count">{entries.length} {entries.length === 1 ? 'project' : 'projects'}</span></header>
     <section aria-label="プロジェクト一覧">

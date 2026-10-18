@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('shows Storymesh with source, package and blog links', async ({ page }) => {
   await page.goto('/projects/');
-  await expect(page.locator('[data-kind]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-kind]:visible')).toHaveCount(2);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Projects');
   const shell = await page.evaluate(() => ({
     background: getComputedStyle(document.body).backgroundImage,
@@ -18,7 +18,7 @@ test('shows Storymesh with source, package and blog links', async ({ page }) => 
   expect(shell).toEqual(blogShell);
   await page.goto('/projects/');
   const cli = page.locator('[data-kind="cli"]');
-  await expect(page.getByRole('heading', { level: 2 })).toHaveText('Storymesh');
+  await expect(cli.getByRole('heading', { level: 2 })).toHaveText('Storymesh');
   await expect(page.getByRole('heading', { name: 'Homepage', exact: true })).toHaveCount(0);
   await expect(cli.getByRole('link', { name: /^サイト/ })).toHaveCount(0);
   await expect(cli.getByRole('link', { name: /^GitHub/ })).toHaveAttribute(
@@ -37,12 +37,52 @@ test('shows Storymesh with source, package and blog links', async ({ page }) => 
   await expect(page.getByRole('button', { name: 'Libraries' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Web', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'All' }).click();
-  await expect(page.locator('[data-kind]:visible')).toHaveCount(1);
+  await expect(page.locator('[data-kind]:visible')).toHaveCount(2);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.locator('h2 a')).toHaveCount(0);
   await cli.getByRole('link', { name: 'Storymesh のブログを読む' }).click();
   await expect(page).toHaveURL(/\/blog\/storymesh\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Storymesh');
+});
+
+test('shows the Keyball39 macOS app and filters desktop projects', async ({ page }) => {
+  await page.goto('/');
+  const latest = page.getByLabel('Latest').getByRole('link', {
+    name: /Projects Keyball39 Keymap Cheat Sheet/,
+  });
+  await expect(latest).toHaveAttribute('href', '/projects/');
+  await latest.click();
+  await expect(page).toHaveURL('/projects/');
+  const desktop = page.locator('[data-kind="desktop"]');
+  await expect(desktop.getByRole('heading', { level: 2 })).toHaveText(
+    'Keyball39 Keymap Cheat Sheet',
+  );
+  await expect(desktop).toContainText('デスクトップアプリ');
+  await expect(desktop).toContainText('macOSメニューバーアプリ');
+  await expect(desktop.getByRole('link', { name: /^GitHub/ })).toHaveAttribute(
+    'href',
+    'https://github.com/y2o-lab/keyball39-keymap-cheat-sheet',
+  );
+  await expect(desktop.getByRole('link')).toHaveCount(2);
+  const blog = desktop.getByRole('link', {
+    name: 'Keyball39 Keymap Cheat Sheet のブログを読む',
+  });
+  await expect(blog).toHaveAttribute('href', '/blog/keyball39-keymap-cheat-sheet/');
+  await blog.click();
+  await expect(page).toHaveURL('/blog/keyball39-keymap-cheat-sheet/');
+  await page.goto('/projects/');
+  await page.getByRole('button', { name: 'Desktop', exact: true }).click();
+  await expect(page.locator('[data-kind]:visible')).toHaveCount(1);
+  await expect(desktop).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Desktop', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.getByRole('button', { name: 'CLI', exact: true }).click();
+  await expect(desktop).toBeHidden();
+  await page.getByRole('button', { name: 'All', exact: true }).click();
+  await expect(page.locator('[data-kind]:visible')).toHaveCount(2);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('removes the preview and standalone project pages from routing and the sitemap', async ({

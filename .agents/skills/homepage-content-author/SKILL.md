@@ -13,7 +13,8 @@ description: Add, revise, or validate Markdown and MDX content for this Astro ho
 4. Use Markdown or MDX only when the requested content needs MDX features.
 5. Keep slugs stable and lowercase. Prefer descriptive hyphenated filenames.
 6. Use `draft: true` for unfinished work.
-7. Run `pnpm build` after content or schema changes. Run `pnpm test` when helper behavior changes.
+7. Always apply [homepage-content-sync](../homepage-content-sync/SKILL.md) for content changes, including additions and publication. Complete homepage Latest, section counts, dates, links, and verification in the same task.
+8. Run `pnpm build` after content or schema changes. Run `pnpm test` when helper behavior changes.
 
 ## Content Quality
 

@@ -46,6 +46,7 @@ export const projectKindLabels = {
   web: 'Webサイト',
   cli: 'CLIツール',
   library: 'ライブラリ',
+  desktop: 'デスクトップアプリ',
 } as const;
 
 export function getProjectBlogUrl(
