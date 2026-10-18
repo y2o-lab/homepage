@@ -45,6 +45,7 @@
 - Repo-scoped skills live in `.agents/skills/*/SKILL.md`.
 - Use `$astro-homepage-maintainer` for implementation, refactors, styling, routing, and verification work.
 - Use `$homepage-content-author` for adding or revising Markdown / MDX collection entries.
+- Always use `$homepage-content-sync` when adding, publishing, revising, or removing blog posts, projects, book notes, or photos. Complete homepage Latest, section count, date, and link updates and verification in the same task.
 
 ## Review Guidelines
 

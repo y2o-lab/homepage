@@ -8,7 +8,7 @@ import {
   sectionDescriptions,
   sectionLabels,
 } from '@/lib/content';
-import { navigationSections, site } from '@/site.config';
+import { navigationSections, site, techStack } from '@/site.config';
 
 const sectionEntries = await Promise.all(
   navigationSections.map(async (section) => {
@@ -46,25 +46,32 @@ const latestEntries = sectionEntries
     </aside>
 
     <div class="panel-area">
-      <div class="toolbar">
-        <div class="chip-row" aria-label="現在の活動">
-          <span class="chip">Available</span>
-          <span class="chip">Astro</span>
-          <span class="chip">TypeScript</span>
+      <section class="toolbar" aria-labelledby="tech-stack-title">
+        <div class="tech-stack-header">
+          <h2 id="tech-stack-title" class="kicker" lang="en">Tech Stack</h2>
+          <a class="button" href="/projects/" lang="en">View Projects</a>
         </div>
-        <a class="button" href="/projects/" lang="en">View Projects</a>
-      </div>
+        <div class="tech-stack-groups">
+          {techStack.map((group) => (
+            <section class="tech-stack-group" aria-label={group.name} lang="en">
+              <h3>{group.name}</h3>
+              <ul class="chip-row">
+                {group.items.map((item) => <li class="chip">{item}</li>)}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </section>
 
       <section class="latest-panel" aria-labelledby="latest-title">
         <div class="panel-heading">
-          <p class="kicker">Latest</p>
-          <h2 id="latest-title">最近の更新</h2>
+          <h2 id="latest-title" lang="en">Latest</h2>
         </div>
-        <div class="latest-list" aria-label="最近の更新">
+        <div class="latest-list" aria-label="Latest">
           {
             latestEntries.length > 0 ? (
               latestEntries.map(({ entry, section }) => (
-                <a href={section === 'photos' ? '/photos/' : `/${section}/${entry.id}/`}>
+                <a href={section === 'photos' || section === 'projects' ? `/${section}/` : `/${section}/${entry.id}/`}>
                   <span lang="en">{sectionLabels[section]}</span>
                   <strong>{entry.data.title}</strong>
                   <p class="latest-description">{entry.data.description}</p>
@@ -82,8 +89,7 @@ const latestEntries = sectionEntries
 
       <section class="index-panel" aria-labelledby="sections-title">
         <div class="panel-heading">
-          <p class="kicker">Index</p>
-          <h2 id="sections-title">見るもの</h2>
+          <h2 id="sections-title" lang="en">Explore</h2>
         </div>
         <div class="project-grid">
           {
@@ -244,20 +250,52 @@ const latestEntries = sectionEntries
   }
 
   .toolbar {
+    display: grid;
+    gap: 18px;
+    border-bottom: 1px solid rgb(76 51 36 / 0.2);
+    padding: 26px 0 18px;
+  }
+
+  .tech-stack-header {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    border-bottom: 1px solid rgb(76 51 36 / 0.2);
-    padding: 26px 0 18px;
+  }
+
+  .tech-stack-header h2 {
+    margin: 0;
+  }
+
+  .tech-stack-groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 24px;
+  }
+
+  .tech-stack-group {
+    min-width: 0;
+  }
+
+  .tech-stack-group h3 {
+    margin: 0 0 8px;
+    color: #4c654e;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  .tech-stack-group .chip-row {
+    margin: 0;
+    padding: 0;
+    gap: 6px;
+    list-style: none;
   }
 
   .panel-heading {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 0.75rem 1rem;
     margin-bottom: 12px;
   }
@@ -525,11 +563,10 @@ const latestEntries = sectionEntries
       font-size: clamp(2.75rem, 16vw, 4.25rem);
     }
 
-    .toolbar {
-      align-items: stretch;
+    .tech-stack-groups {
+      grid-template-columns: 1fr;
     }
 
-    .toolbar .button,
     .sidebar-actions .button {
       width: 100%;
     }

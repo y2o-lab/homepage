@@ -1,21 +1,49 @@
 ---
 import { getCollection } from 'astro:content';
-import EntryList from '@/components/EntryList.astro';
+import ProjectLinks from '@/components/ProjectLinks.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { byNewest, isPublished, sectionDescriptions, sectionLabels } from '@/lib/content';
+import { byNewest, getProjectBlogUrl, isPublished, projectKindLabels } from '@/lib/content';
+import '@/styles/projects.css';
 
-const section = 'projects';
-const entries = (await getCollection(section)).filter(isPublished).sort(byNewest);
+const entries = (await getCollection('projects')).filter(isPublished).sort(byNewest);
+const blogEntries = await getCollection('blog');
+const filters = [
+  { kind: 'all', label: 'All' },
+  { kind: 'web', label: 'Web' },
+  { kind: 'desktop', label: 'Desktop' },
+  { kind: 'cli', label: 'CLI' },
+  { kind: 'library', label: 'Libraries' },
+].filter(
+  (filter) => filter.kind === 'all' || entries.some((entry) => entry.data.kind === filter.kind),
+);
 ---
+<BaseLayout title="Projects" description="Webアプリ、デスクトップアプリ、CLIツール、ライブラリの紹介。">
+  <div class="projects-page">
+    <header class="works-intro"><h1>Projects</h1><span class="project-count">{entries.length} {entries.length === 1 ? 'project' : 'projects'}</span></header>
+    <section aria-label="プロジェクト一覧">
+      <div class="work-filters" role="group" aria-label="作品の種類">{filters.map((filter) => <button type="button" aria-pressed={filter.kind === 'all' ? 'true' : 'false'} data-filter={filter.kind}>{filter.label}</button>)}</div>
+      <div class="project-catalog">
+        {entries.map((entry) => {
+          const project = entry.data;
+          const blogUrl = getProjectBlogUrl(project.blogId, blogEntries);
+          return <article class="project-row" data-kind={project.kind}>
+            <div class="project-summary"><div class="project-meta"><span>{projectKindLabels[project.kind]}</span></div><h2>{project.title}</h2><p class="project-description">{project.description}</p><ul class="project-tags" aria-label="技術・用途">{project.tags.map((tag) => <li>{tag}</li>)}</ul></div>
+            <div class="project-destinations"><ProjectLinks project={project} />{blogUrl && <a class="project-detail-link" href={blogUrl} aria-label={`${project.title} のブログを読む`}>ブログを読む <span aria-hidden="true">→</span></a>}</div>
+          </article>;
+        })}
+        {entries.length === 0 && <p class="empty">公開中のプロジェクトはありません。</p>}
 
-<BaseLayout
-  title={sectionLabels[section]}
-  description={sectionDescriptions[section]}
->
-  <section class="section-header">
-    <p class="eyebrow">Projects</p>
-    <h1 lang="en">{sectionLabels[section]}</h1>
-    <p class="lead">{sectionDescriptions[section]}</p>
-  </section>
-  <EntryList entries={entries} section={section} />
+      </div>
+    </section>
+  </div>
 </BaseLayout>
+<script>
+  const filters = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const projects = document.querySelectorAll<HTMLElement>('[data-kind]');
+  for (const filter of filters) {
+    filter.addEventListener('click', () => {
+      for (const button of filters) button.setAttribute('aria-pressed', String(button === filter));
+      for (const project of projects) project.hidden = filter.dataset.filter !== 'all' && project.dataset.kind !== filter.dataset.filter;
+    });
+  }
+</script>

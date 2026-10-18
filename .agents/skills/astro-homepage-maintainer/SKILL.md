@@ -14,6 +14,7 @@ description: Maintain and extend this Astro personal homepage. Use when working 
 5. Preserve Japanese copy tone unless the edited page already uses another language.
 6. Add or update tests when behavior, schema, sorting, filtering, routing, or visible layout expectations change.
 7. Verify with the narrowest useful command, then use `pnpm build` when routes, content schemas, or rendered pages changed.
+8. When the task adds, publishes, revises, or removes content (including photos), always apply [homepage-content-sync](../homepage-content-sync/SKILL.md) and complete homepage updates and verification in the same task.
 
 ## Command Selection
 

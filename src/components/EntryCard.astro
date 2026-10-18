@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { entry, section } = Astro.props;
-const href = `/${section}/${entry.id}/`;
+const href = section === 'projects' ? '/projects/' : `/${section}/${entry.id}/`;
 ---
 
 <a class="card" href={href}>
