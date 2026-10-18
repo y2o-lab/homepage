@@ -3,16 +3,17 @@ import { expect, test } from '@playwright/test';
 const title = 'ハーネスエンジニアリングについて思考整理';
 const route = '/blog/harness-engineering/';
 
-test('opens the reprinted article from the homepage and renders its content', async ({
+test('opens the reprinted article through the blog index and renders its content', async ({
   page,
 }, testInfo) => {
   await page.goto('/');
 
-  const latest = page.getByLabel('最近の更新').getByRole('link', { name: new RegExp(title) });
-  await expect(latest).toContainText(title);
-  await expect(latest).toContainText('AIエージェントを「お願い」ではなく「仕組み」で制御する。');
-  await expect(latest).toHaveAttribute('href', route);
-  await latest.click();
+  await page.getByRole('link', { name: 'Read Blog', exact: true }).click();
+  const post = page.getByRole('link', { name: new RegExp(title) });
+  await expect(post).toContainText(title);
+  await expect(post).toContainText('AIエージェントを「お願い」ではなく「仕組み」で制御する。');
+  await expect(post).toHaveAttribute('href', route);
+  await post.click();
 
   await expect(page).toHaveURL(route);
   await expect(page).toHaveTitle(`${title} | yuno`);

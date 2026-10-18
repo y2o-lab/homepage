@@ -1,0 +1,4 @@
+interface:
+  display_name: "Homepage Content Sync"
+  short_description: "コンテンツ追加時にホームの最新欄・件数・導線まで反映し検証する"
+  default_prompt: "Use $homepage-content-sync to reflect content changes in the homepage's Latest section, counts, dates, and links."

@@ -34,7 +34,19 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
   await expect(navigation.locator('a[href="/notes/"]')).toHaveCount(0);
   await expect(page.getByLabel('プロフィール概要')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Build notes for the web.' })).toBeVisible();
-  await expect(page.getByLabel('現在の活動')).toBeVisible();
+  const techStack = page.getByRole('region', { name: 'Tech Stack', exact: true });
+  await expect(techStack).toBeVisible();
+  for (const [group, items] of [
+    ['Frontend', ['TypeScript', 'Next.js', 'React', 'Svelte', 'Astro']],
+    ['Backend', ['C#', '.NET', 'Python', 'FastAPI']],
+    ['AI & Workflow', ['Codex', 'Claude Code', 'Harness Engineering', 'GitHub Copilot']],
+    ['Cloud', ['AWS']],
+  ] as const) {
+    await expect(
+      techStack.getByRole('region', { name: group, exact: true }).getByRole('listitem'),
+    ).toHaveText([...items]);
+  }
+  await expect(techStack).not.toContainText('Available');
   await expect(page.getByRole('link', { name: 'View Projects' })).toHaveCount(2);
   await expect(page.locator('a[href^="/notes/"]')).toHaveCount(0);
   await expect(page.locator('.project-card')).toHaveCount(4);
@@ -44,8 +56,19 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
     'Reading',
     'Photography',
   ]);
-  await expect(page.getByRole('heading', { name: '最近の更新' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
+  for (const [name, count, latestDate] of [
+    ['Blog', '2件', '2026年10月18日'],
+    ['Projects', '2件', '2026年10月18日'],
+    ['Reading', '4件', '2026年6月30日'],
+    ['Photography', '9件', '2026年6月2日'],
+  ]) {
+    const card = page.locator('.project-card').filter({
+      has: page.getByRole('heading', { name, exact: true }),
+    });
+    await expect(card.locator('.project-meta span')).toHaveText([count, `最新 ${latestDate}`]);
+  }
+  await expect(page.getByRole('heading', { name: 'Latest' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Explore' })).toBeVisible();
   await expect(page.getByTestId('home-dashboard')).toBeVisible();
 
   const entranceMotion = await page.evaluate(() => {
@@ -85,15 +108,40 @@ test('keeps desk board readable without horizontal overflow', async ({ page }) =
   expect(viewportHeight).toBeDefined();
   expect(box.y).toBeLessThan(viewportHeight ?? 0);
   expect(hasHorizontalOverflow).toBe(false);
-  await expect(page.getByRole('heading', { name: '最近の更新' })).toBeInViewport();
-  await expect(page.getByRole('heading', { name: '見るもの' })).toBeInViewport();
+  await expect(page.getByRole('heading', { name: 'Latest' })).toBeInViewport();
+  await expect(page.getByRole('heading', { name: 'Explore' })).toBeInViewport();
+});
+
+test('shows both tools in recent updates and the Projects catalog', async ({ page }) => {
+  await page.goto('/');
+  const latest = page.getByLabel('Latest');
+  const projectsCard = page.locator('.project-card').filter({
+    has: page.getByRole('heading', { name: 'Projects', exact: true }),
+  });
+  await expect(projectsCard).toContainText('2件');
+
+  for (const title of ['Storymesh', 'Keyball39 Keymap Cheat Sheet']) {
+    const update = latest.getByRole('link').filter({
+      has: page.locator('strong', { hasText: new RegExp(`^${title}$`) }),
+    });
+    await expect(update).toBeVisible();
+    await expect(update).toContainText('Projects');
+    await expect(update).toHaveAttribute('href', '/projects/');
+  }
+
+  await projectsCard.click();
+  await expect(page).toHaveURL('/projects/');
+  await expect(page.getByRole('heading', { level: 2 })).toHaveText([
+    'Keyball39 Keymap Cheat Sheet',
+    'Storymesh',
+  ]);
 });
 
 test('opens the Storymesh post from recent updates and the blog index', async ({ page }) => {
   const title = 'Storymesh — StorybookのStory不足を検知するOSSを作りました';
   await page.goto('/');
 
-  const latestPost = page.getByLabel('最近の更新').getByRole('link').first();
+  const latestPost = page.getByLabel('Latest').getByRole('link').first();
   await expect(latestPost).toContainText(title);
   await expect(latestPost.locator('time')).toHaveAttribute('datetime', '2026-10-18T00:00:00.000Z');
   await latestPost.click();
@@ -124,7 +172,7 @@ test('keeps primary layout readable on mobile', async ({ page }) => {
   await expect(page.getByRole('banner')).toBeVisible();
   await expect(page.getByRole('main')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Build notes for the web.' })).toBeInViewport();
-  await expect(page.getByRole('heading', { name: '見るもの' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Explore' })).toBeVisible();
 });
 
 test('applies the homepage theme shell across public pages', async ({ page }) => {
