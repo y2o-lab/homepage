@@ -4,6 +4,7 @@ description: Keyball39のキー配置を画面に重ねて確認できるmacOS�
 pubDate: 2026-10-18
 kind: desktop
 repository: https://github.com/y2o-lab/keyball39-keymap-cheat-sheet
+blogId: keyball39-keymap-cheat-sheet
 tags:
   - macOS
   - Keyball39

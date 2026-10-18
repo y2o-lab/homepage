@@ -48,7 +48,7 @@ test('shows Storymesh with source, package and blog links', async ({ page }) => 
 test('shows the Keyball39 macOS app and filters desktop projects', async ({ page }) => {
   await page.goto('/');
   const latest = page.getByLabel('Latest').getByRole('link', {
-    name: /Keyball39 Keymap Cheat Sheet/,
+    name: /Projects Keyball39 Keymap Cheat Sheet/,
   });
   await expect(latest).toHaveAttribute('href', '/projects/');
   await latest.click();
@@ -63,7 +63,14 @@ test('shows the Keyball39 macOS app and filters desktop projects', async ({ page
     'href',
     'https://github.com/y2o-lab/keyball39-keymap-cheat-sheet',
   );
-  await expect(desktop.getByRole('link')).toHaveCount(1);
+  await expect(desktop.getByRole('link')).toHaveCount(2);
+  const blog = desktop.getByRole('link', {
+    name: 'Keyball39 Keymap Cheat Sheet のブログを読む',
+  });
+  await expect(blog).toHaveAttribute('href', '/blog/keyball39-keymap-cheat-sheet/');
+  await blog.click();
+  await expect(page).toHaveURL('/blog/keyball39-keymap-cheat-sheet/');
+  await page.goto('/projects/');
   await page.getByRole('button', { name: 'Desktop', exact: true }).click();
   await expect(page.locator('[data-kind]:visible')).toHaveCount(1);
   await expect(desktop).toBeVisible();

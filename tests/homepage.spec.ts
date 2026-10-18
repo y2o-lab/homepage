@@ -5,13 +5,14 @@ const themedRoutes = [
   '/blog/',
   '/blog/harness-engineering/',
   '/blog/storymesh/',
+  '/blog/keyball39-keymap-cheat-sheet/',
   '/projects/',
   '/books/',
   '/books/sample-book/',
   '/photos/',
 ] as const;
 
-test('renders the desk board homepage navigation and key panels', async ({ page }) => {
+test('renders the desk board homepage navigation and key panels', async ({ page }, testInfo) => {
   await page.goto('/');
 
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
@@ -57,7 +58,7 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
     'Photography',
   ]);
   for (const [name, count, latestDate] of [
-    ['Blog', '2件', '2026年10月18日'],
+    ['Blog', '3件', '2026年10月18日'],
     ['Projects', '2件', '2026年10月18日'],
     ['Reading', '4件', '2026年6月30日'],
     ['Photography', '9件', '2026年6月2日'],
@@ -88,6 +89,10 @@ test('renders the desk board homepage navigation and key panels', async ({ page 
     sidebar: 'desk-slide',
     card: 'card-place',
   });
+  await page.evaluate(async () => {
+    await Promise.all(document.getAnimations().map((animation) => animation.finished));
+  });
+  await page.screenshot({ path: testInfo.outputPath('homepage.png'), fullPage: true });
 });
 
 test('keeps desk board readable without horizontal overflow', async ({ page }) => {
@@ -112,7 +117,7 @@ test('keeps desk board readable without horizontal overflow', async ({ page }) =
   await expect(page.getByRole('heading', { name: 'Explore' })).toBeInViewport();
 });
 
-test('shows both tools in recent updates and the Projects catalog', async ({ page }) => {
+test('shows the recent project and both tools in the Projects catalog', async ({ page }) => {
   await page.goto('/');
   const latest = page.getByLabel('Latest');
   const projectsCard = page.locator('.project-card').filter({
@@ -120,7 +125,7 @@ test('shows both tools in recent updates and the Projects catalog', async ({ pag
   });
   await expect(projectsCard).toContainText('2件');
 
-  for (const title of ['Storymesh', 'Keyball39 Keymap Cheat Sheet']) {
+  for (const title of ['Keyball39 Keymap Cheat Sheet']) {
     const update = latest.getByRole('link').filter({
       has: page.locator('strong', { hasText: new RegExp(`^${title}$`) }),
     });
@@ -141,7 +146,7 @@ test('opens the Storymesh post from recent updates and the blog index', async ({
   const title = 'Storymesh — StorybookのStory不足を検知するOSSを作りました';
   await page.goto('/');
 
-  const latestPost = page.getByLabel('Latest').getByRole('link').first();
+  const latestPost = page.getByLabel('Latest').getByRole('link', { name: new RegExp(title) });
   await expect(latestPost).toContainText(title);
   await expect(latestPost.locator('time')).toHaveAttribute('datetime', '2026-10-18T00:00:00.000Z');
   await latestPost.click();
