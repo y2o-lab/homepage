@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectPreviewLinks from '@/components/ProjectPreviewLinks.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { isPublished } from '@/lib/content';
+import { previewProjects } from '@/lib/project-preview';
+import '@/styles/project-preview.css';
+
+const blogIds = new Set((await getCollection('blog')).filter(isPublished).map((entry) => entry.id));
+---
+<BaseLayout title="Projects" description="Webアプリ、CLIツール、ライブラリの紹介。">
+  <div class="works-preview">
+    <header class="works-intro"><h1>Projects</h1><span class="project-count">3 projects</span></header>
+    <section aria-label="プロジェクト一覧">
+      <div class="work-filters" role="group" aria-label="作品の種類"><button type="button" aria-pressed="true" data-filter="all">All</button><button type="button" aria-pressed="false" data-filter="web">Web</button><button type="button" aria-pressed="false" data-filter="cli">CLI</button><button type="button" aria-pressed="false" data-filter="library">Libraries</button></div>
+      <div class="project-catalog">
+        {previewProjects.map((project) => <article class="project-row" data-kind={project.kind}>
+          <div class="project-summary"><div class="project-meta"><span>{project.type}</span>{project.reference && <span class="project-status">参考サンプル</span>}</div><h2>{project.title}</h2><p class="project-description">{project.description}</p><ul class="project-tags" aria-label="技術・用途">{project.tags.map((tag) => <li>{tag}</li>)}</ul></div>
+          <div class="project-destinations"><ProjectPreviewLinks project={project} />{project.blogId && blogIds.has(project.blogId) && <a class="project-detail-link" href={`/blog/${project.blogId}/`} aria-label={`${project.title} のブログを読む`}>ブログを読む <span aria-hidden="true">→</span></a>}</div>
+        </article>)}
+      </div>
+    </section>
+    <p class="preview-note">デザインプレビュー · clsx は表示例として掲載した他者のOSSです。</p>
+  </div>
+</BaseLayout>
+<script>
+  const filters = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const projects = document.querySelectorAll<HTMLElement>('[data-kind]');
+  for (const filter of filters) {
+    filter.addEventListener('click', () => {
+      for (const button of filters) button.setAttribute('aria-pressed', String(button === filter));
+      for (const project of projects) project.hidden = filter.dataset.filter !== 'all' && project.dataset.kind !== filter.dataset.filter;
+    });
+  }
+</script>

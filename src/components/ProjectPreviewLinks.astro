@@ -1,0 +1,16 @@
+---
+import type { PreviewProject } from '@/lib/project-preview';
+
+interface Props {
+  project: PreviewProject;
+}
+const { project } = Astro.props;
+const links = [
+  { label: 'サイト', value: project.url },
+  { label: 'GitHub', value: project.repository },
+  { label: 'npm', value: project.npm },
+].filter((link) => link.value);
+---
+<div class="project-resources" aria-label={`${project.title} の公開先`}>
+  {links.map((link) => <a href={link.value}><span class="resource-label">{link.label} <span aria-hidden="true">↗</span></span><span class="resource-url">{link.value}</span></a>)}
+</div>
