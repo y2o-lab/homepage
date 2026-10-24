@@ -1,0 +1,67 @@
+name: CodeQL
+
+on:
+  pull_request:
+    branches:
+      - main
+      - release
+      - release-infra
+  push:
+    branches:
+      - main
+      - release
+      - release-infra
+  merge_group:
+  schedule:
+    # 毎週水曜 12:23 JST。最新のクエリでデフォルトブランチを再解析する。
+    - cron: '23 3 * * 3'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    # 手動実行とmerge queueも、開発・本番サイト・インフラのブランチに限定する。
+    if: >-
+      contains(fromJSON('["refs/heads/main", "refs/heads/release", "refs/heads/release-infra"]'), github.ref) ||
+      contains(fromJSON('["main", "release", "release-infra"]'), github.base_ref) ||
+      contains(fromJSON('["refs/heads/main", "refs/heads/release", "refs/heads/release-infra"]'), github.event.merge_group.base_ref)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - javascript-typescript
+          - actions
+          - python
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      # init/analyzeは同じリリースのSHAで固定し、Renovateでまとめて更新する。
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          languages: ${{ matrix.language }}
+          # JS/TS、Actions、Pythonをビルド・依存インストール・本番Secretsなしで解析する。
+          build-mode: none
+          queries: security-extended
+
+      - name: Analyze and upload supported results
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          category: /language:${{ matrix.language }}
+          # merge queueの一時refでは解析のみ行い、アップロードはPR/pushで行う。
+          upload: ${{ github.event_name == 'merge_group' && 'never' || 'always' }}
