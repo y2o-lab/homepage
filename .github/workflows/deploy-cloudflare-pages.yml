@@ -47,7 +47,7 @@ jobs:
       - name: Set up mise
         uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3
         with:
-          version: 2026.10.12
+          version: 2026.10.18
 
       - name: Install project tools
         run: mise install
@@ -63,5 +63,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: '4.150.0'
+          wranglerVersion: '4.151.3'
           command: pages deploy dist --project-name=homepage --branch=release
