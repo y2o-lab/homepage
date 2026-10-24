@@ -1,24 +1,24 @@
 import type { CollectionEntry } from 'astro:content';
 
-export type ContentSection = 'blog' | 'notes' | 'books' | 'projects';
+export type ContentSection = 'blog' | 'books' | 'projects' | 'photos';
 export type AnyEntry =
   | CollectionEntry<'blog'>
-  | CollectionEntry<'notes'>
   | CollectionEntry<'books'>
-  | CollectionEntry<'projects'>;
+  | CollectionEntry<'projects'>
+  | CollectionEntry<'photos'>;
 
 export const sectionLabels: Record<ContentSection, string> = {
-  blog: 'ブログ',
-  notes: '勉強メモ',
-  books: '書籍メモ',
-  projects: '作ったもの',
+  blog: 'Blog',
+  books: 'Reading',
+  projects: 'Projects',
+  photos: 'Photography',
 };
 
 export const sectionDescriptions: Record<ContentSection, string> = {
   blog: '考えたこと、調べたこと、日々の記録。',
-  notes: '技術や学習内容をあとから取り出せる形で残します。',
   books: '読んだ本、読んでいる本、そこから得たメモ。',
   projects: '作ったもの、試したもの、公開したものの記録。',
+  photos: '日々の記録として残した写真。',
 };
 
 export function isPublished<T extends AnyEntry>(entry: T): boolean {
@@ -29,6 +29,10 @@ export function byNewest<T extends AnyEntry>(a: T, b: T): number {
   return b.data.pubDate.getTime() - a.data.pubDate.getTime();
 }
 
+export function byTakenDate(a: CollectionEntry<'photos'>, b: CollectionEntry<'photos'>): number {
+  return b.data.takenDate.getTime() - a.data.takenDate.getTime();
+}
+
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat('ja-JP', {
     year: 'numeric',
@@ -36,4 +40,19 @@ export function formatDate(date: Date): string {
     day: 'numeric',
     timeZone: 'Asia/Tokyo',
   }).format(date);
+}
+
+export const projectKindLabels = {
+  web: 'Webサイト',
+  cli: 'CLIツール',
+  library: 'ライブラリ',
+  desktop: 'デスクトップアプリ',
+} as const;
+
+export function getProjectBlogUrl(
+  blogId: string | undefined,
+  blogEntries: CollectionEntry<'blog'>[],
+): string | undefined {
+  const entry = blogEntries.find((entry) => entry.id === blogId && isPublished(entry));
+  return entry ? `/blog/${entry.id}/` : undefined;
 }

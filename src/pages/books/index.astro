@@ -13,8 +13,8 @@ const entries = (await getCollection(section)).filter(isPublished).sort(byNewest
   description={sectionDescriptions[section]}
 >
   <section class="section-header">
-    <p class="eyebrow">Books</p>
-    <h1>{sectionLabels[section]}</h1>
+    <p class="eyebrow" lang="en">Reading</p>
+    <h1 lang="en">{sectionLabels[section]}</h1>
     <p class="lead">{sectionDescriptions[section]}</p>
   </section>
   <BookShelf entries={entries} />

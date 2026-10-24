@@ -16,13 +16,6 @@ const blog = defineCollection({
   schema: commonContentSchema,
 });
 
-const notes = defineCollection({
-  loader: glob({ base: './src/content/notes', pattern: '**/*.{md,mdx}' }),
-  schema: commonContentSchema.extend({
-    topic: z.string().optional(),
-  }),
-});
-
 const books = defineCollection({
   loader: glob({ base: './src/content/books', pattern: '**/*.{md,mdx}' }),
   schema: commonContentSchema.extend({
@@ -37,10 +30,24 @@ const books = defineCollection({
 const projects = defineCollection({
   loader: glob({ base: './src/content/projects', pattern: '**/*.{md,mdx}' }),
   schema: commonContentSchema.extend({
-    url: z.url().optional(),
+    kind: z.enum(['web', 'cli', 'library', 'desktop']).default('web'),
+    url: z.union([z.url(), z.literal('/')]).optional(),
     repository: z.url().optional(),
+    npm: z.url().optional(),
+    blogId: z.string().min(1).optional(),
     featured: z.boolean().default(false),
   }),
 });
 
-export const collections = { blog, notes, books, projects };
+const photos = defineCollection({
+  loader: glob({ base: './src/content/photos', pattern: '**/*.{md,mdx}' }),
+  schema: commonContentSchema.extend({
+    takenDate: z.coerce.date(),
+    image: z.string().startsWith('/'),
+    imageAlt: z.string(),
+    imageWidth: z.number().int().positive(),
+    imageHeight: z.number().int().positive(),
+  }),
+});
+
+export const collections = { blog, books, projects, photos };
