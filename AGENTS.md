@@ -27,6 +27,15 @@
 - Do not edit generated files to fix source behavior.
 - Avoid adding production dependencies unless the requested feature clearly requires them.
 
+## Version Update Rules
+
+- Treat every version change, including fixes to Renovate updates, as a repository-wide consistency check. Search for the tool or dependency name and its old version before editing; update all affected pins, compatibility constraints, lockfiles, CI jobs, and documented commands together.
+- For Terraform, check `mise.toml`, every `required_version` under `infra/`, provider constraints, `.terraform.lock.hcl`, and all Terraform workflows. The version installed by mise must satisfy every applicable Terraform Core constraint, and plan and apply must use the same project tool configuration. Keep Core and provider versions separate; update provider locks only when provider dependencies change.
+- For pnpm, keep `package.json`'s `packageManager` and every `pnpm/action-setup` version aligned. Check Node.js versions across CI jobs when changing the runtime or dependency compatibility requirements. Use pnpm to regenerate `pnpm-lock.yaml` when dependencies change.
+- Do not relax a compatibility constraint solely to silence a version error. Determine whether the installed tool or the constraint is incorrect, then make the smallest compatible change. Review Renovate coverage and grouping when an automated update has left related version settings out of sync.
+- Verify with the selected tool version, not an unrelated globally installed binary. For Terraform, run `mise exec terraform -- terraform version`, `mise exec terraform -- terraform fmt -check -recursive infra`, and init and validate in each affected environment. For local validation without backend access, use `init -backend=false -input=false -lockfile=readonly` with a temporary `TF_DATA_DIR`, then validate with the same directory. Do not run apply merely to verify a version change.
+- Before reporting completion, review the diff for missed version references and unintended lockfile changes. Report the versions used, checks completed, and any verification blocked by network access, credentials, or the execution environment.
+
 ## Content Rules
 
 - Blog posts live in `src/content/blog`.
