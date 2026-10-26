@@ -81,7 +81,6 @@ def pre_tool(event: Any) -> int:
     for pattern, message in BLOCKED_COMMANDS:
         if pattern.search(command):
             print(f"Blocked by homepage Codex hook: {message}", file=sys.stderr)
-            print(f"Command: {command}", file=sys.stderr)
             return 1
 
     return 0
@@ -92,10 +91,8 @@ def user_prompt(event: Any) -> int:
     if not text:
         return 0
 
-    findings = [label for pattern, label in SECRET_PATTERNS if pattern.search(text)]
-    if findings:
-        joined = ", ".join(findings)
-        print(f"Blocked by homepage Codex hook: possible secret in prompt ({joined}).", file=sys.stderr)
+    if any(pattern.search(text) for pattern, _ in SECRET_PATTERNS):
+        print("Blocked by homepage Codex hook: possible secret in prompt.", file=sys.stderr)
         return 1
 
     return 0

@@ -112,6 +112,40 @@ def check_hook_behavior() -> None:
 
     secret = run_hook("user-prompt", {"prompt": "OPENAI_API_TOKEN=sk-abcdefghijklmnopqrstuvwxyz123456"})
     require(secret.returncode != 0, "user-prompt hook must block high-confidence secrets.")
+    require(secret.stdout == "", "user-prompt hook must not echo input to stdout.")
+    require(
+        secret.stderr == "Blocked by homepage Codex hook: possible secret in prompt.\n",
+        "user-prompt hook must emit only a fixed diagnostic without input data.",
+    )
+
+    safe_prompt = run_hook("user-prompt", {"prompt": "Please run the project tests."})
+    require(safe_prompt.returncode == 0, "user-prompt hook must allow ordinary prompts.")
+
+    # Construct synthetic credentials so the fixtures cannot be mistaken for real keys.
+    for sample in (
+        "AKIA" + "0123456789ABCDEF",
+        "access_token=" + "x" * 32,
+        "-----BEGIN " + "PRIVATE KEY-----",
+    ):
+        result = run_hook("user-prompt", {"prompt": sample})
+        require(result.returncode != 0, "user-prompt hook must block each supported secret format.")
+        require(result.stdout == "", "user-prompt hook must not echo input to stdout.")
+        require(
+            result.stderr == "Blocked by homepage Codex hook: possible secret in prompt.\n",
+            "user-prompt hook must emit only a fixed diagnostic without input data.",
+        )
+
+    blocked_with_sensitive_input = run_hook(
+        "pre-tool",
+        {"tool_input": {"command": "npm install private-package --token=example-sensitive-value"}},
+    )
+    require(blocked_with_sensitive_input.returncode != 0, "pre-tool hook must still block npm install.")
+    require(blocked_with_sensitive_input.stdout == "", "pre-tool hook must not echo commands to stdout.")
+    require(
+        blocked_with_sensitive_input.stderr
+        == "Blocked by homepage Codex hook: This repository uses pnpm. Use the matching `pnpm` command instead.\n",
+        "pre-tool hook must emit only the diagnostic without command arguments.",
+    )
 
     with tempfile.TemporaryDirectory(prefix="homepage-codex-harness-") as workspace:
         temp_repo = Path(workspace)
